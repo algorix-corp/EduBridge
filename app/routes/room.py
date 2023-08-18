@@ -24,7 +24,7 @@ class MakeReservation(BaseModel):
 
 @router.post("/reservation")
 def make_reservation(reservation_form: MakeReservation, current_academy: dict = Depends(get_current_academy)):
-    academy_id = reservation_form.academy_id
+    academy_id = current_academy["academy_id"]
     room_id = reservation_form.room_id
     start_date = reservation_form.start_date
     end_date = reservation_form.end_date
