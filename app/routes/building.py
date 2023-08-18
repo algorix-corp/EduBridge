@@ -44,5 +44,7 @@ def get_building_stats(building_id: int, day: int):
     with Session(engine) as session:
         query_result = session.query(Reservation).get(building_id)
         data = []
-        if(query_result.start_date <= day && )
+        if query_result.start_date <= day <= query_result.end_date:
+            data.append(query_result.price)
+        return data
 
