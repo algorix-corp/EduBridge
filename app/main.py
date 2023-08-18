@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.security import HTTPBearer
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine, Session, Field
 from typing import Optional
 from datetime import date, datetime, timedelta
@@ -114,6 +115,19 @@ engine = create_engine(database_url)
 SQLModel.metadata.create_all(engine)
 
 app = FastAPI()
+
+# cors
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 def issue_token(academy_id: int):
