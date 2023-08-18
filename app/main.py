@@ -13,11 +13,6 @@ load_dotenv()
 
 # ========== S3 ==========
 
-# S3_NAME=ja23-edubridge
-# S3_REGION=ap-northeast-2
-# S3_ACCESS_KEY_ID=AKIA2BDA6KYHERN6CIMB
-# S3_SECRET_ACCESS_KEY=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
-
 s3 = boto3.client(
     "s3",
     aws_access_key_id=os.getenv("S3_ACCESS_KEY_ID"),
@@ -130,17 +125,27 @@ class BuildingIn(BaseModel):
     image_dataurl: Optional[str] = None
 
 
-@app.post("/building")
+@app.post("/building", tags=["Building"])
 def create_building(building: BuildingIn):
     # if there is image, save it to s3 and get url
+    image_url = None
     if building.image_dataurl:
-        building.image_url = upload_image_to_s3(building.image_dataurl)
+        image_url = upload_image_to_s3(building.image_dataurl)
     with Session(engine) as session:
-        db_building = Building.from_orm(building)
+        # db_building = Building.from_orm(building) -> image_dataurl is not a valid Building field
+        db_building = Building(
+            name=building.name, address=building.address, image_url=image_url
+        )
         session.add(db_building)
         session.commit()
         session.refresh(db_building)
         return db_building
+
+
+@app.get("/building", tags=["Building"])
+def get_buildings():
+    with Session(engine) as session:
+        return session.query(Building).all()
 
 
 @app.get("/academy")
