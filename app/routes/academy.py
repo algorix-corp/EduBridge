@@ -42,7 +42,7 @@ def create_academy(academy: AcademyIn):
         session.add(db_academy)
         session.commit()
         session.refresh(db_academy)
-        return
+        return "Create-Academy Success"
 
 
 @router.get("/")
