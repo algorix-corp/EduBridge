@@ -5,8 +5,35 @@ from datetime import date, datetime
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
+import boto3
+import base64
 
 load_dotenv()
+
+# ========== S3 ==========
+
+# S3_NAME=ja23-edubridge
+# S3_REGION=ap-northeast-2
+# S3_ACCESS_KEY_ID=AKIA2BDA6KYHERN6CIMB
+# S3_SECRET_ACCESS_KEY=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
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv("S3_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("S3_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("S3_REGION"),
+)
+
+
+def upload_image_to_s3(image_dataurl: str, filename: str):
+    image_dataurl = image_dataurl.split(",")[1]
+    image_data = base64.b64decode(image_dataurl)
+    s3.put_object(
+        Bucket=os.getenv("S3_NAME"),
+        Key=filename,
+        Body=image_data,
+        ContentType="image/png",
+    )
 
 
 # ========== Models ==========
@@ -95,14 +122,16 @@ def root():
     return {"message": "Hello World"}
 
 
+class BuildingIn(BaseModel):
+    name: str
+    address: str
+    image_dataurl: Optional[str] = None
+
+
 # @app.post("/building")
-# def create_building(building: Building):
-#     class BuildingIn(BaseModel):
-#         name: str
-#         address: str
-#         image_file: Optional[str] = None
-#
-#     with Session(engine) as session:
+# def create_building(building: BuildingIn):
+#     # if there is image, save it to s3 and get url
+#     if building.image_dataurl:
 
 
 @app.get("/academy")
