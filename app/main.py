@@ -7,6 +7,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Session, SQLModel
 
+import app.tools.env
 from app import schemas
 from app.errors.dbapierror import database_exception_handler
 from app.errors.exception import other_exception_handler
