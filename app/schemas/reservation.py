@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 from sqlmodel import SQLModel, Field
@@ -11,3 +11,4 @@ class Reservation(SQLModel, table=True):
     price: int
     start_date: date
     end_date: date
+    created_at: Optional[datetime] = Field(default=None)

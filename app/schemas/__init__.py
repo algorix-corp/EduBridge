@@ -5,3 +5,4 @@ from app.schemas.lecture import Lecture
 from app.schemas.reservation import Reservation
 from app.schemas.room import Room
 from app.schemas.student import Student
+from app.schemas.admin import Admin
