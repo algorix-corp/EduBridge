@@ -1,6 +1,7 @@
+from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlmodel import Session
 
@@ -38,13 +39,9 @@ def get_buildings():
 
 
 @router.get("/{building_id}/stats")
-def get_building_stats(building_id: int, day: int):
-    if len(str(day)) != 8:
-        raise HTTPException(detail="day must be 8 digits", status_code=400)
+def get_building_stats(building_id: int, day: date):
     with Session(engine) as session:
-        query_result = session.query(Reservation).get(building_id)
-        data = []
-        if query_result.start_date <= day <= query_result.end_date:
-            data.append(query_result.price)
-        return data
-
+        query_result = session.query(Reservation).get(building_id).filter(Reservation.start_date <= day,
+                                                                          Reservation.end_date >= day).with_entities(
+            Reservation.price, Reservation.room_id, Reservation.academy_id)
+        return query_result
