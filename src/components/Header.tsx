@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-export function Header() {
+interface HeaderProps {}
+
+export function Header({}: HeaderProps) {
   return <Container></Container>;
 }
 
