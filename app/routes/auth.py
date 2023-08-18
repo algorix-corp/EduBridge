@@ -3,7 +3,7 @@ from fastapi import Depends, APIRouter, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from app.schemas import Academy
+from app.schemas.academy import Academy
 from app.tools.database import engine
 from app.tools.get_current_academy import get_current_academy
 from app.tools.issue_token import issue_token
