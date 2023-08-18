@@ -95,6 +95,16 @@ def root():
     return {"message": "Hello World"}
 
 
+# @app.post("/building")
+# def create_building(building: Building):
+#     class BuildingIn(BaseModel):
+#         name: str
+#         address: str
+#         image_file: Optional[str] = None
+#
+#     with Session(engine) as session:
+
+
 @app.get("/academy")
 def get_academies():
     with Session(engine) as session:
