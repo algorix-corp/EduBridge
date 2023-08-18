@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer
 from jose import jwt
 
 
-def get_current_academy(token: str = Depends(HTTPBearer())):
+def get_current_academy(token=Depends(HTTPBearer())):
     try:
         payload = jwt.decode(token.credentials, os.getenv("JWT_SECRET"), algorithms=["HS256"])
         return payload
