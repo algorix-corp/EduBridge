@@ -1,3 +1,5 @@
+from typing import Optional
+
 import bcrypt
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
