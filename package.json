@@ -15,6 +15,8 @@
     "@mantine/dates": "^6.0.19",
     "@mantine/hooks": "^6.0.19",
     "@mantine/modals": "^6.0.19",
+    "@tabler/icons-react": "^2.31.0",
+    "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
