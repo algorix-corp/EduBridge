@@ -1,0 +1,73 @@
+import { ReactNode } from 'react';
+import styled, { css } from 'styled-components';
+import { colors } from '../colors';
+
+interface ButtonProps {
+  children?: ReactNode;
+  onClick?: () => void;
+  backgroundColor?: string;
+  color?: string;
+  isBordered?: boolean;
+}
+
+export function Button({
+  children,
+  onClick,
+  backgroundColor = colors.white,
+  color = colors.blue,
+  isBordered = false,
+}: ButtonProps) {
+  return (
+    <Container
+      $backgroundColor={backgroundColor}
+      $isBordered={isBordered}
+      onClick={() => onClick?.()}
+    >
+      <Text $color={color}>{children}</Text>
+    </Container>
+  );
+}
+
+const Container = styled.div<{
+  $backgroundColor: string;
+  $isBordered: boolean;
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  width: max-content;
+  height: 50px;
+
+  padding: 0 25px 0 25px;
+
+  scale: 1;
+  cursor: pointer;
+  transition: scale 150ms ease-in-out;
+
+  ${({ $isBordered, $backgroundColor }) =>
+    $isBordered
+      ? css`
+          border: 2px solid ${$backgroundColor};
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+        `
+      : css`
+          background-color: ${$backgroundColor};
+        `}
+
+  &:hover {
+    scale: 1.04;
+  }
+`;
+
+const Text = styled.p<{
+  $color: string;
+}>`
+  display: inline-block;
+  color: ${({ $color }) => $color};
+
+  font-weight: 500;
+`;

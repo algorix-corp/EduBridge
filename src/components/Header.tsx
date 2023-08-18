@@ -1,16 +1,25 @@
 import styled from 'styled-components';
-import { ReactComponent as LogoSVG } from '../svgs/logo.svg';
+import { ReactComponent as LogoSVG } from '../assets/logo.svg';
+import { Button } from '../global/Button';
+import { colors } from '../colors';
 
 export function Header() {
   return (
     <Container>
       <Logo />
-      <ButtonGroup></ButtonGroup>
+      <ButtonGroup>
+        <Button backgroundColor={colors.white} color={colors.white} isBordered>
+          Building Manager
+        </Button>
+        <Button>Academy</Button>
+      </ButtonGroup>
     </Container>
   );
 }
 
 const Container = styled.div`
+  position: absolute;
+
   width: calc(100vw - 400px);
   height: 120px;
 
@@ -18,8 +27,6 @@ const Container = styled.div`
 
   display: flex;
   align-items: center;
-
-  background-color: #3430ff;
 `;
 
 const Logo = styled(LogoSVG)`
@@ -30,8 +37,9 @@ const Logo = styled(LogoSVG)`
 `;
 
 const ButtonGroup = styled.div`
+  display: flex;
+  gap: 20px;
+
   margin-left: auto;
-  width: 250px;
-  height: 70px;
-  background-color: red;
+  height: 50px;
 `;
