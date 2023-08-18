@@ -12,7 +12,10 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@mantine/core": "^6.0.19",
+    "@mantine/dates": "^6.0.19",
     "@mantine/hooks": "^6.0.19",
+    "@mantine/modals": "^6.0.19",
+    "dayjs": "^1.11.9",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "localforage": "^1.10.0",
@@ -22,7 +25,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "sort-by": "^1.2.0",
-    "styled-components": "^6.0.7"
+    "styled-components": "^6.0.7",
+    "vite-plugin-svgr": "^3.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
