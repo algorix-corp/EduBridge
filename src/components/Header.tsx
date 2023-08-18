@@ -20,7 +20,7 @@ export function Header() {
 const Container = styled.div`
   position: absolute;
 
-  width: calc(100vw - 400px);
+  width: 100vw;
   height: 120px;
 
   padding: 0 200px 0 200px;

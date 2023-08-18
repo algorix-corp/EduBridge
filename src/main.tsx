@@ -1,29 +1,61 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './index.css';
-import { Header } from './components/Header';
+import { MantineProvider } from '@mantine/core';
+import { Header } from './components/Header.tsx';
+import { BuildingHeader } from './components/BuildingHeader.tsx';
+import { CreateBuilding } from './components/CreateBuilding.tsx';
+import { DatesProvider } from '@mantine/dates';
+import { BuildingMain } from './components/BuildingMain.tsx';
+import { Landing } from './pages/Landing.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <div>
+      <>
         <Header />
+        <Landing />
         <Outlet />
-      </div>
+      </>
+    ),
+  },
+  {
+    path: '/building',
+    element: (
+      <>
+        <BuildingHeader />
+        <Outlet />
+      </>
     ),
     children: [
       {
-        path: '/hi',
-        element: <div>hi</div>,
+        path: '',
+        element: <BuildingMain />,
+      },
+      {
+        path: 'new',
+        element: <CreateBuilding />,
       },
     ],
   },
+  // {
+  //   path: '/academy',
+  //   element: (
+  //     <>
+  //       <AcademyHeader />
+  //       <Outlet />
+  //     </>
+  //   ),
+  //   children: [
+
+  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <MantineProvider withGlobalStyles withNormalizeCSS>
+    <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+      <RouterProvider router={router} />
+    </DatesProvider>
+  </MantineProvider>,
 );
