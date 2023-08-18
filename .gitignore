@@ -89,7 +89,6 @@ fabric.properties
 
 .idea/*
 
-!.idea/codeStyles
 !.idea/runConfigurations
 
 ### Node ###
@@ -604,3 +603,5 @@ pip-selfcheck.json
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 
 # End of https://www.toptal.com/developers/gitignore/api/react,pycharm,node,venv,python,visualstudiocode,webstorm,intellij+all
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/codeStyles/Project.xml
