@@ -1,12 +1,13 @@
 from datetime import date
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy import or_, and_
 from sqlmodel import Session
 
 from app import schemas
 from app.tools.database import engine
+from app.tools.get_current_academy import get_current_academy
 
 router = APIRouter(prefix="/room", tags=["Room"])
 

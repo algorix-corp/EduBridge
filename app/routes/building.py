@@ -42,4 +42,7 @@ def get_building_stats(building_id: int, day: int):
     if len(str(day)) != 8:
         raise HTTPException(detail="day must be 8 digits", status_code=400)
     with Session(engine) as session:
-        return session.query(Reservation).get(building_id)
+        query_result = session.query(Reservation).get(building_id)
+        data = []
+        if(query_result.start_date <= day && )
+

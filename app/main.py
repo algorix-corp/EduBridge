@@ -6,8 +6,7 @@ from sqlmodel import SQLModel
 import app.tools.env
 from app.errors.dbapierror import database_exception_handler
 from app.errors.exception import other_exception_handler
-from app.routes import academy
-from app.routes import building
+from app.routes import academy, building, room, auth
 from app.tools.database import engine
 
 app = FastAPI()
@@ -40,3 +39,5 @@ def startup():
 
     app.include_router(academy.router)
     app.include_router(building.router)
+    app.include_router(room.router)
+    app.include_router(auth.router)
