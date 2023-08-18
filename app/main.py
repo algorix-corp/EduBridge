@@ -26,7 +26,7 @@ s3 = boto3.client(
 )
 
 
-def upload_image_to_s3(image_dataurl: str, filename: str = uuid.uuid4() + ".png"):
+def upload_image_to_s3(image_dataurl: str, filename: str = str(uuid.uuid4()) + ".png"):
     image_dataurl = image_dataurl.split(",")[1]
     image_data = base64.b64decode(image_dataurl)
     s3.put_object(
