@@ -1,12 +1,7 @@
-import {MantineProvider, Text} from '@mantine/core'
-import './App.css'
+import './App.css';
 
 function App() {
-    return (
-        <MantineProvider withGlobalStyles withNormalizeCSS>
-            <Text>Welcome to Mantine!</Text>
-        </MantineProvider>
-    )
+  return <div>hello world!</div>;
 }
 
-export default App
+export default App;
