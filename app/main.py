@@ -1,119 +1,19 @@
-from fastapi import FastAPI, HTTPException, Header, Depends
-from fastapi.security import HTTPBearer
+from datetime import date
+
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import or_, and_
-from sqlmodel import SQLModel, create_engine, Session, Field
-from typing import Optional
-from datetime import date, datetime, timedelta
 from pydantic import BaseModel
-from dotenv import load_dotenv
-import os
-import boto3
-import base64
-import uuid
-from jose import jwt
-import bcrypt
+from sqlalchemy import or_, and_
+from sqlalchemy.exc import DBAPIError
+from sqlmodel import Session, SQLModel
 
-load_dotenv()
-
-# ========== S3 ==========
-
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=os.getenv("S3_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("S3_SECRET_ACCESS_KEY"),
-    region_name=os.getenv("S3_REGION"),
-)
-
-
-def upload_image_to_s3(image_dataurl: str, filename: str = str(uuid.uuid4()) + ".png"):
-    image_dataurl = image_dataurl.split(",")[1]
-    image_data = base64.b64decode(image_dataurl)
-    s3.put_object(
-        Bucket=os.getenv("S3_NAME"),
-        Key=filename,
-        Body=image_data,
-        ContentType="image/png",
-    )
-    return f"https://{os.getenv('S3_NAME')}.s3.{os.getenv('S3_REGION')}.amazonaws.com/{filename}"
-
-
-# ========== Models ==========
-class Building(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    address: str
-    image_url: Optional[str] = None
-
-
-class Academy(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    owner_name: str
-    phone: str
-    username: str
-    password: str
-    subject: list[str]
-    description: Optional[str] = None
-    image_url: Optional[str] = None
-
-
-class Lecture(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    academy_id: int = Field(foreign_key="academy.id")
-    name: str
-    description: Optional[str] = None
-    start_at: date
-    end_at: date
-
-
-class Student(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    academy_id: int = Field(foreign_key="academy.id")
-    name: str
-    phone: str
-    address: str
-    memo: Optional[str] = None
-    image_url: Optional[str] = None
-
-
-class Bill(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    student_id: int = Field(foreign_key="student.id")
-    lecture_id: int = Field(foreign_key="lecture.id")
-    yearmonth: str  # YYYYMM
-    amount: int
-    is_paid: bool = False
-    memo: Optional[str] = None
-
-
-class Room(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    building_id: int = Field(foreign_key="building.id")
-    floor: int
-    room_number: str  # 호실
-    description: Optional[str] = None
-    daily_price: int
-
-
-class Reservation(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    academy_id: int = Field(foreign_key="academy.id")
-    room_id: int = Field(foreign_key="room.id")
-    start_date: date
-    end_date: date
-
-
-# ========== Init ==========
-
-db_host = os.getenv("POSTGRES_HOST")
-db_name = os.getenv("POSTGRES_DB")
-db_user = os.getenv("POSTGRES_USER")
-db_pass = os.getenv("POSTGRES_PASSWORD")
-
-database_url = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-engine = create_engine(database_url)
-SQLModel.metadata.create_all(engine)
+from app import schemas
+from app.errors.dbapierror import database_exception_handler
+from app.errors.exception import other_exception_handler
+from app.routes import academy
+from app.routes import building
+from app.tools.database import engine
+from app.tools.get_current_academy import get_current_academy
 
 app = FastAPI()
 
@@ -131,114 +31,9 @@ app.add_middleware(
 )
 
 
-def issue_token(academy_id: int):
-    with Session(engine) as session:
-        academy = session.get(Academy, academy_id)
-        if not academy:
-            return None
-        payload = {
-            "academy_id": academy.id,
-            "academy_name": academy.name,
-            "username": academy.username,
-            "image_url": academy.image_url,
-            "exp": datetime.utcnow() + timedelta(days=1),
-        }
-        return jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
-
-
-# jwt token dependency, Bearer
-def get_current_academy(token: str = Depends(HTTPBearer())):
-    try:
-        payload = jwt.decode(token.credentials, os.getenv("JWT_SECRET"), algorithms=["HS256"])
-        return payload
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-
 @app.get("/")
 def root():
     return {"message": "Hello World"}
-
-
-class BuildingIn(BaseModel):
-    name: str
-    address: str
-    image_dataurl: Optional[str] = None
-
-
-@app.post("/building", tags=["Building"])
-def create_building(building: BuildingIn):
-    image_url = None
-    if building.image_dataurl:
-        image_url = upload_image_to_s3(building.image_dataurl)
-    with Session(engine) as session:
-        db_building = Building(name=building.name, address=building.address, image_url=image_url)
-        session.add(db_building)
-        session.commit()
-        session.refresh(db_building)
-        return db_building
-
-
-@app.get("/building", tags=["Building"])
-def get_buildings():
-    with Session(engine) as session:
-        return session.query(Building).all()
-
-
-class AcademyIn(BaseModel):
-    name: str
-    owner_name: str
-    phone: str
-    username: str
-    password: str  # hash it
-    subject: list[str]
-    description: Optional[str] = None
-    image_dataurl: Optional[str] = None
-
-
-@app.post("/academy", tags=["Academy"])
-def create_academy(academy: AcademyIn):
-    image_url = None
-    if academy.image_dataurl:
-        image_url = upload_image_to_s3(academy.image_dataurl)
-    with Session(engine) as session:
-        db_academy = Academy(
-            name=academy.name,
-            owner_name=academy.owner_name,
-            phone=academy.phone,
-            username=academy.username,
-            password=bcrypt.hashpw(academy.password.encode(), bcrypt.gensalt()).decode(),
-            subject=academy.subject,
-            description=academy.description,
-            image_url=image_url,
-        )
-        session.add(db_academy)
-        session.commit()
-        session.refresh(db_academy)
-        return
-
-
-@app.get("/academy", tags=["Academy"])
-def get_academies():
-    with Session(engine) as session:
-        return session.query(Academy).all()
-
-
-class AcademyLogin(BaseModel):
-    username: str
-    password: str
-
-
-@app.post("/login", tags=["Academy"])
-def login(login: AcademyLogin):
-    with Session(engine) as session:
-        db_academy = session.query(Academy).filter(Academy.username == login.username).first()
-        if not db_academy:
-            raise HTTPException(status_code=404, detail="Academy not found")
-        if not bcrypt.checkpw(login.password.encode(), db_academy.password.encode()):
-            raise HTTPException(status_code=401, detail="Password is incorrect")
-        # return db_academy
-        return {"access_token": issue_token(db_academy.id)}
 
 
 class MakeReservation(BaseModel):
@@ -257,25 +52,25 @@ def make_reservation(reservation_form: MakeReservation, current_academy: dict = 
 
     with Session(engine) as session:
         # 학원 있는지
-        db_academy = session.query(Academy).get(reservation_form.academy_id)
+        db_academy = session.query(schemas.Academy).get(reservation_form.academy_id)
         if db_academy is None:
             raise HTTPException(status_code=404, detail="Academy Not Found")
 
         try:
-            conflicting_reservation = session.query(Reservation).filter(
-                Reservation.room_id == reservation_form.room_id,
+            conflicting_reservation = session.query(schemas.Reservation).filter(
+                schemas.Reservation.room_id == reservation_form.room_id,
                 or_(
                     and_(
-                        Reservation.start_date <= reservation_form.start_date,
-                        Reservation.end_date >= reservation_form.start_date
+                        schemas.Reservation.start_date <= reservation_form.start_date,
+                        schemas.Reservation.end_date >= reservation_form.start_date
                     ),
                     and_(
-                        Reservation.start_date <= reservation_form.end_date,
-                        Reservation.end_date >= reservation_form.end_date
+                        schemas.Reservation.start_date <= reservation_form.end_date,
+                        schemas.Reservation.end_date >= reservation_form.end_date
                     ),
                     and_(
-                        Reservation.start_date >= reservation_form.start_date,
-                        Reservation.end_date <= reservation_form.end_date
+                        schemas.Reservation.start_date >= reservation_form.start_date,
+                        schemas.Reservation.end_date <= reservation_form.end_date
                     )
                 )
             ).first()
@@ -286,11 +81,11 @@ def make_reservation(reservation_form: MakeReservation, current_academy: dict = 
         if conflicting_reservation is not None:
             raise HTTPException(status_code=409, detail="Room already Occupied")
         else:
-            db_reservation = Reservation(
-                academy_id=reservation_form.academy_id,
-                room_id=reservation_form.room_id,
-                start_date=reservation_form.start_date,
-                end_date=reservation_form.end_date,
+            db_reservation = schemas.Reservation(
+                academy_id=academy_id,
+                room_id=room_id,
+                start_date=start_date,
+                end_date=end_date,
             )
 
             session.add(db_reservation)
@@ -303,6 +98,17 @@ def make_reservation(reservation_form: MakeReservation, current_academy: dict = 
 @app.post("/auth")
 def auth(current_academy: dict = Depends(get_current_academy)):
     return current_academy
+
+
+@app.on_event("startup")
+def startup():
+    SQLModel.metadata.create_all(engine)
+
+    app.add_exception_handler(DBAPIError, database_exception_handler)
+    app.add_exception_handler(Exception, other_exception_handler)
+
+    app.include_router(academy.router)
+    app.include_router(building.router)
 
 
 if __name__ == "__main__":
