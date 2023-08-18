@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 import boto3
 import base64
+import uuid
 
 load_dotenv()
 
@@ -25,7 +26,7 @@ s3 = boto3.client(
 )
 
 
-def upload_image_to_s3(image_dataurl: str, filename: str):
+def upload_image_to_s3(image_dataurl: str, filename: str = uuid.uuid4() + ".png"):
     image_dataurl = image_dataurl.split(",")[1]
     image_data = base64.b64decode(image_dataurl)
     s3.put_object(
@@ -34,6 +35,7 @@ def upload_image_to_s3(image_dataurl: str, filename: str):
         Body=image_data,
         ContentType="image/png",
     )
+    return f"https://{os.getenv('S3_NAME')}.s3.{os.getenv('S3_REGION')}.amazonaws.com/{filename}"
 
 
 # ========== Models ==========
@@ -128,10 +130,17 @@ class BuildingIn(BaseModel):
     image_dataurl: Optional[str] = None
 
 
-# @app.post("/building")
-# def create_building(building: BuildingIn):
-#     # if there is image, save it to s3 and get url
-#     if building.image_dataurl:
+@app.post("/building")
+def create_building(building: BuildingIn):
+    # if there is image, save it to s3 and get url
+    if building.image_dataurl:
+        building.image_url = upload_image_to_s3(building.image_dataurl)
+    with Session(engine) as session:
+        db_building = Building.from_orm(building)
+        session.add(db_building)
+        session.commit()
+        session.refresh(db_building)
+        return db_building
 
 
 @app.get("/academy")
