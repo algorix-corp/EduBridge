@@ -35,18 +35,14 @@ def make_reservation(reservation_form: MakeReservation, current_academy: dict = 
         try:
             conflicting_reservation = session.query(schemas.Reservation).filter(
                 schemas.Reservation.room_id == reservation_form.room_id,
-                or_(
-                    and_(
+                and_(
+                    or_(
                         schemas.Reservation.start_date <= reservation_form.start_date,
-                        schemas.Reservation.end_date >= reservation_form.start_date
+                        reservation_form.start_date <= schemas.Reservation.end_date
                     ),
-                    and_(
-                        schemas.Reservation.start_date <= reservation_form.end_date,
-                        schemas.Reservation.end_date >= reservation_form.end_date
-                    ),
-                    and_(
-                        schemas.Reservation.start_date >= reservation_form.start_date,
-                        schemas.Reservation.end_date <= reservation_form.end_date
+                    or_(
+                        reservation_form.start_date <= schemas.Reservation.start_date,
+                        schemas.Reservation.start_date <= reservation_form.end_date
                     )
                 )
             ).first()
