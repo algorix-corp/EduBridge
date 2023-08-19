@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { ReactComponent as LogoSVG } from '../../assets/logo.svg';
+import { ReactComponent as LogoSVG } from '../../assets/logo_white.svg';
 import { ReactComponent as AcademySVG } from '../../assets/academy.svg';
 import { ReactComponent as StarsSVG } from '../../assets/stars.svg';
 
