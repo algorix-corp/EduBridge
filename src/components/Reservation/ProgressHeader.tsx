@@ -2,28 +2,32 @@ import styled from 'styled-components';
 import { colors } from '../../colors';
 
 export function ProgressHeader({ steps }: { steps: number }) {
-  const Container = styled.div`
-    height: 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  `;
-
-  const Step = styled.div<{ $active: boolean }>`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    font-weight: 700;
-    background-color: ${({ $active }) =>
-      $active ? colors.black : colors.vampgray};
-    color: ${({ $active }) => ($active ? colors.white : colors.black)};
-  `;
-
   return (
     <Container>
-      <Step $active={steps === 1}>Step 1</Step>
-      <Step $active={steps === 2}>Step 2</Step>
-      <Step $active={steps === 3}>Step 3</Step>
+      <StepContainer>
+        <Step $active={steps} />
+      </StepContainer>
     </Container>
   );
 }
+
+const Container = styled.div`
+  height: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+`;
+
+const StepContainer = styled.div`
+  height: 100%;
+  width: 100vw;
+
+  border-bottom: 2px solid ${colors.gray};
+`;
+
+const Step = styled.div<{ $active: number }>`
+  background-color: ${colors.black};
+  width: ${({ $active }) => $active * 25}%;
+  height: 100%;
+
+  transition: width 200ms ease;
+`;
