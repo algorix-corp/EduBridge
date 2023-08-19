@@ -67,7 +67,15 @@ export function CreateBuilding() {
 
   return (
     <NewBuildingArea>
-      <Form>
+      <Form
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          border: `2px solid ${colors.black}`,
+        }}
+      >
         <form onSubmit={form.onSubmit(values => new_building(values))}>
           <Input
             label="Building Name"
