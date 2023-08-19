@@ -1,4 +1,4 @@
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, between
 
 from api.routes._imports import *
 
@@ -17,48 +17,66 @@ class ReservationCreate(BaseModel):
 
 @router.post("/")
 def create_reservation(reservation: ReservationCreate, current_user: User = Depends(get_current_user)):
-    if current_user.role == "admin":
-        # check start_date and end_date do not overlap with existing reservations
-        reservations = Reservation.select().where(
-            and_(
+    with Session(engine) as session:
+        if current_user.role == "admin":
+            # check start_date and end_date do not overlap with existing reservations
+            overlapping_reservations = session.query(Reservation).filter(
+                Reservation.room_id == reservation.room_id and 
+                or_(
+                    and_(
+                        Reservation.start_date <= reservation.start_date,
+                        Reservation.end_date >= reservation.start_date
+                    ),
+                    and_(
+                        Reservation.start_date <= reservation.end_date,
+                        Reservation.end_date >= reservation.end_date
+                    ),
+                    and_(
+                        Reservation.start_date >= reservation.start_date,
+                        Reservation.end_date <= reservation.end_date
+                    )
+                )
+            ).all()
+
+            if overlapping_reservations:
+                raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
+
+            # check room is available
+            room = session.query(Room).filter(reservation.room_id).first()
+            if not room.available:
+                raise HTTPException(status_code=400, detail="Room is not available")
+            # create reservation
+            reservation = Reservation(**reservation.dict())
+            session.add(reservation)
+            session.commit()
+            session.refresh(reservation)
+            return reservation
+        elif current_user.role == "academy":
+            # check user is owner of academy
+            academy = session.query(Academy).filter(reservation.academy_id).first()
+            if academy.owner_id != current_user.id:
+                raise HTTPException(status_code=400, detail="User is not owner of academy")
+            # check start_date and end_date do not overlap with existing reservations
+            reservations = session.query(Reservation).filter(
                 Reservation.room_id == reservation.room_id,
-                or_(Reservation.start_date.between(reservation.start_date, reservation.end_date),
-                    Reservation.end_date.between(reservation.start_date, reservation.end_date))
+                or_(between(Reservation.start_date, reservation.start_date, reservation.end_date),
+                    between(Reservation.end_date, reservation.start_date, reservation.end_date))
+
             )
-        )
-        if reservations:
-            raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
-        # check room is available
-        room = Room.get(reservation.room_id)
-        if not room.available:
-            raise HTTPException(status_code=400, detail="Room is not available")
-        # create reservation
-        reservation = Reservation.create(**reservation.dict())
-        return reservation
-    elif current_user.role == "academy":
-        # check user is owner of academy
-        academy = Academy.get(reservation.academy_id)
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=400, detail="User is not owner of academy")
-        # check start_date and end_date do not overlap with existing reservations
-        reservations = Reservation.select().where(
-            and_(
-                Reservation.room_id == reservation.room_id,
-                or_(Reservation.start_date.between(reservation.start_date, reservation.end_date),
-                    Reservation.end_date.between(reservation.start_date, reservation.end_date))
-            )
-        )
-        if reservations:
-            raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
-        # check room is available
-        room = Room.get(reservation.room_id)
-        if not room.available:
-            raise HTTPException(status_code=400, detail="Room is not available")
-        # create reservation
-        reservation = Reservation.create(**reservation.dict())
-        return reservation
-    else:
-        raise HTTPException(status_code=400, detail="User is not authorized")
+            if reservations:
+                raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
+            # check room is available
+            room = session.query(Room).filter(reservation.room_id).first()
+            if not room.available:
+                raise HTTPException(status_code=400, detail="Room is not available")
+            # create reservation
+            reservation = Reservation(**reservation.dict())
+            session.add(reservation)
+            session.commit()
+            session.refresh(reservation)
+            return reservation
+        else:
+            raise HTTPException(status_code=400, detail="User is not authorized")
 
 
 @router.get("/")

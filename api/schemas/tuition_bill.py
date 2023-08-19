@@ -9,4 +9,5 @@ class TuitionBill(SQLModel, table=True):
     amount: int
     is_paid: bool = False
     memo: Optional[str] = None
+    stripe_session_id: Optional[str] = None
     created_at: Optional[datetime] = Field(default=None, sa_column_kwargs={"default": "now()"})
