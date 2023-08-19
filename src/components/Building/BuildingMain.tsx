@@ -35,7 +35,7 @@ export function BuildingMain() {
           </Button>
         </div>
         {data ? (
-          data.map((building) => (
+          data.map(building => (
             <BuildingCard key={building.id}>
               <Card shadow="sm" padding="lg" radius="md" withBorder>
                 <Card.Section>

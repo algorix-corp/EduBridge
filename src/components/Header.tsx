@@ -21,7 +21,7 @@ export function Header({ type }: HeaderProps) {
   const location = useLocation();
   const [loggedin, setloggedin] = useState(!!token);
   useEffect(() => {
-    setloggedin(!!token)
+    setloggedin(!!token);
   }, [token]);
 
   const signInLink = loggedin ? '/building' : '/auth/signin';

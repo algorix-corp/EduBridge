@@ -17,7 +17,6 @@ import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 import { AcademyStudentsDashboard } from './components/Academy/AcademyStudentsDashboard.tsx';
 import { User } from './components/Auth/User.tsx';
 
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -67,8 +66,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'students',
-        element: <AcademyStudentsDashboard/>
-      }
+        element: <AcademyStudentsDashboard />,
+      },
     ],
   },
   {
