@@ -1,4 +1,4 @@
-from _dependency import *
+from _imports import *
 
 
 class TuitionBill(SQLModel, table=True):

@@ -1,4 +1,4 @@
-from _dependency import *
+from _imports import *
 
 
 class Reservation(SQLModel, table=True):
@@ -8,4 +8,4 @@ class Reservation(SQLModel, table=True):
     charge: int
     start_date: date
     end_date: date
-    reserved_at: Optional[datetime] = Field(default=None)
+    created_at: Optional[datetime] = Field(default=None, sa_column_kwargs={"default": "now()"})

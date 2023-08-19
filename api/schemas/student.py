@@ -1,4 +1,4 @@
-from _dependency import *
+from _imports import *
 
 
 class Student(SQLModel, table=True):
@@ -12,3 +12,4 @@ class Student(SQLModel, table=True):
     address: str
     memo: Optional[str] = None
     image_url: Optional[str] = None
+    created_at: Optional[datetime] = Field(default=None, sa_column_kwargs={"default": "now()"})

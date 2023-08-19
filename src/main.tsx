@@ -10,6 +10,7 @@ import { Landing } from './pages/Landing.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { RecoilRoot } from 'recoil';
 import { BuildingDetail } from './components/Building/BuildingDetail.tsx';
+import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,12 @@ const router = createBrowserRouter([
         <Outlet />
       </>
     ),
+    children: [
+      {
+        path: '',
+        element: <AcademySelection />,
+      },
+    ],
   },
   {
     path: '*',
