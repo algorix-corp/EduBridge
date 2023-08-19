@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from sqlmodel import SQLModel
 
 import api.routes.academy
@@ -54,4 +55,5 @@ def startup_event():
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    # redirect to /docs
+    return RedirectResponse(url="/docs")
