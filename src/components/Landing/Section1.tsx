@@ -71,8 +71,8 @@ export function Section1() {
 const Container = styled.div`
   width: 100%;
   height: calc(100vh + 10000px);
-  background-color: ${colors.blue};
 
+  background-color: ${colors.blue};
   background-image: url('${linePNG}');
   background-attachment: fixed;
   background-position: center;

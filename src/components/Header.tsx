@@ -4,7 +4,7 @@ import { ReactComponent as BlackLogoSVG } from '../assets/logo_black.svg';
 import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
-import { scrollYState } from '../states';
+import { loggedInState, scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
@@ -13,9 +13,14 @@ interface HeaderProps {
 
 export function Header({ type }: HeaderProps) {
   const [scroll] = useRecoilState(scrollYState);
-
+  const [loggedin] = useRecoilState(loggedInState);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const signInLink = loggedin ? '/building' : '/auth/signin';
+  const signUpLink = loggedin ? '/academy' : '/auth/signup';
+
+  const Logo = type === 'white' ? BlackLogo : WhiteLogo;
 
   return (
     <Container
@@ -24,36 +29,42 @@ export function Header({ type }: HeaderProps) {
       $type={type}
       $path={location.pathname}
     >
-      {type === 'white' ? <BlackLogo /> : <WhiteLogo />}
+      <Logo
+        onClick={() => {
+          navigate('/');
+        }}
+      />
       {type === 'white' ? (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/building')}
+            onClick={() => navigate(signInLink)}
             backgroundColor={colors.black}
             color={colors.black}
             isBordered
           >
-            Building Manager
+            {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
           <Button
-            onClick={() => navigate('/academy')}
+            onClick={() => navigate(signUpLink)}
             backgroundColor={colors.blue}
             color={colors.white}
           >
-            Academy
+            {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
         </ButtonGroup>
       ) : (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/building')}
+            onClick={() => navigate(signInLink)}
             backgroundColor={colors.white}
             color={colors.white}
             isBordered
           >
-            Building Manager
+            {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
-          <Button onClick={() => navigate('/academy')}>Academy</Button>
+          <Button onClick={() => navigate(signUpLink)}>
+            {loggedin ? 'Academy Owner' : 'Sign Up'}
+          </Button>
         </ButtonGroup>
       )}
     </Container>
@@ -76,12 +87,12 @@ const Container = styled.div<{
   ${({ $type }) =>
     $type === 'white'
       ? css`
-          border-bottom: 1px solid ${colors.gray};
+          border-bottom: 2px solid ${colors.gray};
         `
       : undefined}
 
   width: 100vw;
-  height: 120px;
+  height: 100px;
 
   padding: 0 200px 0 200px;
 
