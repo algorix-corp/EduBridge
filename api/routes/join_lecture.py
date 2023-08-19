@@ -29,13 +29,17 @@ def join_lecture(lecture_id: int, join_lecture: JoinLectureCreate, current_user=
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="User is not in the same academy as lecture")
 
-        if lecture in student.lectures:
+        lecture_check = session.query(JoinLecture).filter(JoinLecture.lecture_id == lecture_id,
+                                                          JoinLecture.student_id == join_lecture.student_id).first()
+
+        if lecture_check:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already in lecture")
 
-        student.lectures.append(lecture)
+        new_join_lecture = JoinLecture(student_id=student.id, lecture_id=lecture_id)
+        session.add(new_join_lecture)
         session.commit()
-        session.refresh(student)
-        return student
+        session.refresh(new_join_lecture)
+        return new_join_lecture
 
 
 @router.get("/")
