@@ -31,7 +31,9 @@ class Password(BaseModel):
 @router.post("/")
 def create_user(user: UserIn):
     with Session(engine) as session:
-        if session.get(User, user.email):
+        # if session.get(User, user.email):
+        #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
+        if Session(engine).query(User).filter(User.email == user.email).first():
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
         user.password = hashpw(user.password.encode(), gensalt()).decode()
         userdata = user.dict()

@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import api.tools.env
+import api.tools.database
+from sqlmodel import SQLModel
+
 import api.routes.student
 import api.routes.academy
 import api.routes.building
@@ -36,3 +39,13 @@ app.include_router(api.routes.tuition_bill.router)
 app.include_router(api.routes.user.router)
 app.include_router(api.routes.join_lecture.router)
 app.include_router(api.routes.auth.router)
+
+
+@app.on_event("startup")
+def startup_event():
+    SQLModel.metadata.create_all(api.tools.database.engine)
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
