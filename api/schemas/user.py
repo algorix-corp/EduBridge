@@ -1,4 +1,4 @@
-from _imports import *
+from api.schemas._imports import *
 
 
 class User(SQLModel, table=True):

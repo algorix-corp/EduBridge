@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from _imports import *
+from api.routes._imports import *
 
 router = APIRouter(
     prefix="/building",

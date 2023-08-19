@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from _imports import *
-from reservation import ReservationIn
+from api.routes._imports import *
+from api.routes.reservation import ReservationIn
 
 router = APIRouter(
-    prefix="/",
+    prefix="",
     tags=["room"],
 )
 
