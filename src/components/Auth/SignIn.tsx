@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useForm } from '@mantine/form';
-import { Group, TextInput } from '@mantine/core';
+import { Group } from '@mantine/core';
 import { Button } from '../../global/Button';
 import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { loggedInState } from '../../states';
 import { Form } from '../../global/Form.tsx';
 import { checkEmail } from '../../global/function/index.ts';
 import { PasswordInput } from '../../global/PasswordInput.tsx';
+import { TextInput as Text } from '../../global/TextInput.tsx';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -104,4 +105,8 @@ const Container = styled.div`
   background-position: center;
 
   z-index: -1;
+`;
+
+const TextInput = styled(Text)`
+  margin-bottom: 15px;
 `;

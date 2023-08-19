@@ -7,24 +7,32 @@ export function PasswordInput({ ...props }) {
 }
 
 const Container = styled(Input)`
+  & label {
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  & label span {
+    display: none;
+  }
+
   & div {
     border: 0;
   }
 
   & div div {
     height: 40px;
+    overflow: visible;
+  }
+
+  & div div input {
+    scale: 1;
   }
 
   & div .mantine-Input-rightSection {
     width: 40px;
 
-    scale: 1;
     cursor: pointer;
-    transition: scale 150ms ease-in-out;
-
-    &:hover {
-      scale: 1.04;
-    }
   }
 
   & div div input {
@@ -47,5 +55,15 @@ const Container = styled(Input)`
 
     border: 2px solid ${colors.gray};
     border-radius: 7px;
+    color: ${colors.vampgray};
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  & div div button svg {
+    width: 18px !important;
+    height: 18px !important;
   }
 `;
