@@ -1,4 +1,6 @@
 from api.routes._imports import *
+import stripe
+from fastapi.responses import RedirectResponse
 
 router = APIRouter(
     prefix="/tuition_bill",
@@ -21,6 +23,7 @@ class TuitionBillUpdate(BaseModel):
     amount: Optional[int]
     memo: Optional[str] = None
 
+stripe.api_key = "sk_test_51LwFptLCjb1ULAaJ4f4Z9mIvpwGwrmiOY6FsMurzhHQY8EjfnKiDwAEWSe1VWz7uIX6K1qHpPpGryZZxVDnKJJr600cOV9ouvk"
 
 @router.post("/")
 def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(get_current_user)):
@@ -78,6 +81,51 @@ def get_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user
             if not tuition_bill:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
             return tuition_bill
+
+
+@router.get("/{tuition_bill_id}/pay")
+def pay_tuition_bill(tuition_bill_id: int):
+    with Session(engine) as session:
+        tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+        if not tuition_bill or tuition_bill.paid:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+        if tuition_bill.stripe_session_id:
+            session = stripe.checkout.Session.retrieve(tuition_bill.stripe_session_id)
+            if session.status is "open":
+                return RedirectResponse(session.url, status_code=303)
+            elif session.status is "complete":
+                tuition_bill.paid = True
+                session.commit()
+                session.refresh(tuition_bill)
+                return {"message": "TuitionBill paid successfully"}
+
+    stripe_session = stripe.checkout.Session.create(
+        line_items=[{
+            'price_data': {
+                'currency': 'krw',
+                'product_data': {
+                    'name': f'TuitionBill/{tuition_bill_id}/{tuition_bill.yearmonth}',
+                },
+                'unit_amount': tuition_bill.amount,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url='https://ja2023api.algorix.io/tuition_bill/{CHECKOUT_SESSION_ID}/pay',
+        cancel_url='https://ja2023api.algorix.io/tuition_bill/cancel',
+    )
+
+    with Session(engine) as session:
+        tuition_bill.stripe_session_id = stripe_session.id
+        session.commit()
+        session.refresh(tuition_bill)
+
+    return RedirectResponse(stripe_session.url, status_code=303)
+
+
+@router.get("/cancel")
+def cancel():
+    return {"message": "Payment canceled"}
 
 
 @router.put("/{tuition_bill_id}")
