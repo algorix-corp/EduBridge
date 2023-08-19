@@ -1,8 +1,5 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Alert, Button, Card, Group, Image, Text } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
-import api from '../../api/api.ts';
+import { useNavigate } from 'react-router-dom';
+import { Button, Card, Image } from '@mantine/core';
 import styled from 'styled-components';
 
 export function AcademySelection() {
