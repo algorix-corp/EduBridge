@@ -20,26 +20,6 @@ def create_reservation(reservation: ReservationCreate, current_user: User = Depe
     with Session(engine) as session:
         if current_user.role == "admin":
             # check start_date and end_date do not overlap with existing reservations
-            overlapping_reservations = session.query(Reservation).where(
-                Reservation.room_id == reservation.room_id,
-                or_(
-                    and_(
-                        Reservation.start_date <= reservation.start_date,
-                        Reservation.end_date >= reservation.start_date
-                    ),
-                    and_(
-                        Reservation.start_date <= reservation.end_date,
-                        Reservation.end_date >= reservation.end_date
-                    ),
-                    and_(
-                        Reservation.start_date >= reservation.start_date,
-                        Reservation.end_date <= reservation.end_date
-                    )
-                )
-            ).all()
-
-            if overlapping_reservations:
-                raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
 
             # check room is available
             room = session.query(Room).filter(reservation.room_id).first()
