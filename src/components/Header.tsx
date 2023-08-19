@@ -10,7 +10,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/api.ts';
 import toast from 'react-hot-toast';
-import { LoadingOverlay } from '@mantine/core';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -23,8 +22,8 @@ export function Header({ type }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [loggedin, setloggedin] = useState<boolean | null>(null);
-  const [showbuilding, setshowbuilding] = useState<boolean>(true);
-  const [showacademy, setshowacademy] = useState<boolean>(true);
+  const [showbuilding, setshowbuilding] = useState<boolean>(false);
+  const [showacademy, setshowacademy] = useState<boolean>(false);
   const [iswhite, setiswhite] = useState<boolean>(false);
   useEffect(() => {
     if (type === 'white') setiswhite(true);
@@ -42,8 +41,10 @@ export function Header({ type }: HeaderProps) {
           setshowacademy(true);
           setshowbuilding(true);
         } else if (r.data.role == 'building') {
+          setshowbuilding(true);
           setshowacademy(false);
         } else if (r.data.role == 'academy') {
+          setshowacademy(true);
           setshowbuilding(false);
         }
       })
@@ -73,7 +74,6 @@ export function Header({ type }: HeaderProps) {
         }}
       />
       <ButtonGroup>
-        <LoadingOverlay visible={loggedin === null} />
         {showbuilding ? (
           <Button
             onClick={() => navigate(signInLink)}
