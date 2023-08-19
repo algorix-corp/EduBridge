@@ -92,7 +92,7 @@ const Container = styled.div<{
       : undefined}
 
   width: 100vw;
-  height: 120px;
+  height: 100px;
 
   padding: 0 200px 0 200px;
 
