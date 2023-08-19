@@ -188,7 +188,7 @@ export function BuildingDetail() {
         ) : (
           <Button onClick={() => setEditing(true)}>Edit</Button>
         )}
-        <RoomList id={id} />
+        <RoomList id={Number(id)} />
       </div>
     </BuildingDetailPage>
   );
