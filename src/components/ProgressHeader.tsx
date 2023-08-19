@@ -39,6 +39,8 @@ const ProgressBar = styled.div`
   background-color: #007bff;
 `;
 
+
+
 export function ProgressHeader() {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
@@ -46,6 +48,12 @@ export function ProgressHeader() {
   const handleStepChange = (step) => {
     if (step >= 1 && step <= totalSteps) {
       setCurrentStep(step);
+    }
+  };
+
+  const handleBackButtonClick = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
