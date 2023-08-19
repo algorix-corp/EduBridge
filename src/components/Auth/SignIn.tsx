@@ -8,10 +8,8 @@ import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
-import { useRecoilState } from 'recoil';
-import { loggedInState } from '../../states';
 import { Form } from '../../global/Form.tsx';
-import { checkEmail } from '../../global/function/index.ts';
+import { checkEmail } from '../../global/function';
 import { PasswordInput } from '../../global/PasswordInput.tsx';
 import { TextInput as Text } from '../../global/TextInput.tsx';
 
@@ -33,7 +31,6 @@ export function SignIn() {
     email: string;
     password: string;
   }
-  const [, setLoggedin] = useRecoilState<boolean>(loggedInState);
 
   const login = (values: logindata) => {
     const randomstr = Math.random().toString(36).substring(7);
@@ -48,7 +45,6 @@ export function SignIn() {
       .then(r => {
         localStorage.setItem('token', r.data.Bearer);
         toast.success('Successfully signed in!', { id: randomstr });
-        setLoggedin(true);
         navigate('/');
       })
       .catch(() => {

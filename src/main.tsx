@@ -15,6 +15,7 @@ import { SignIn } from './components/Auth/SignIn.tsx';
 import { Toaster } from 'react-hot-toast';
 import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 import { AcademyStudentsDashboard } from './components/Academy/AcademyStudentsDashboard.tsx';
+import { User } from './components/Auth/User.tsx';
 
 const router = createBrowserRouter([
   {
@@ -65,8 +66,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'students',
-        element: <AcademyStudentsDashboard/>
-      }
+        element: <AcademyStudentsDashboard />,
+      },
     ],
   },
   {
@@ -89,6 +90,15 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: '/user',
+    element: (
+      <>
+        <Header type="white" />
+        <User />
+      </>
+    ),
+  },
+  {
     path: '*',
     element: <NotFound />,
   },
@@ -97,7 +107,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <MantineProvider withGlobalStyles withNormalizeCSS>
     <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-      <RecoilRoot>  
+      <RecoilRoot>
         <Toaster position="top-center" reverseOrder={false} />
         <RouterProvider router={router} />
       </RecoilRoot>
