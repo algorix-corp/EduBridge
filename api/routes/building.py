@@ -27,10 +27,6 @@ def create_building(building: BuildingIn, current_user: dict = Depends(get_curre
     if current_user.role != "building" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
-        user_id = session.query(User.id).filter(User.id == current_user.id).first()
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        current_user["id"] = user_id[0]
         building = Building(**building.dict(), owner_id=current_user.id)
         session.add(building)
         session.commit()
@@ -41,10 +37,6 @@ def create_building(building: BuildingIn, current_user: dict = Depends(get_curre
 @router.get("/")
 def get_buildings(current_user: dict = Depends(get_current_user)):
     with Session(engine) as session:
-        user_id = session.query(User.id).filter(User.id == current_user.id).first()
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        current_user["id"] = user_id[0]
         buildings = session.query(Building).filter(Building.owner_id == current_user.id).all()
         return buildings
 
@@ -61,11 +53,6 @@ def get_building(building_id: int, current_user: dict = Depends(get_current_user
 @router.put("/{building_id}")
 def update_building(building_id: int, building: BuildingUpdate, current_user: dict = Depends(get_current_user)):
     with Session(engine) as session:
-        user_id = session.query(User.id).filter(User.id == current_user.id).first()
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        current_user["id"] = user_id[0]
-
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
@@ -83,11 +70,6 @@ def update_building(building_id: int, building: BuildingUpdate, current_user: di
 @router.delete("/{building_id}")
 def delete_building(building_id: int, current_user: dict = Depends(get_current_user)):
     with Session(engine) as session:
-        user_id = session.query(User.id).filter(User.id == current_user.id).first()
-        if not user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        current_user["id"] = user_id[0]
-
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
