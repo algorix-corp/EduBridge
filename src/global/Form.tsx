@@ -4,6 +4,8 @@ import { colors } from '../colors';
 
 interface Form {
   children: ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [x: string]: any;
 }
 
 export function Form({ children, ...props }: Form) {
@@ -23,7 +25,7 @@ const Container = styled.div`
   background-color: ${colors.white};
 
   border-radius: 16px;
-  border: 2px solid ${colors.gray};
+  border: 2px solid ${colors.black};
 `;
 
 const Box = styled.div`

@@ -14,10 +14,6 @@ const Container = styled(Select)`
     font-weight: 600;
   }
 
-  & .mantine-Select-label span {
-    display: none;
-  }
-
   & div {
     overflow: visible;
   }

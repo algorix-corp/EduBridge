@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { colors } from '../colors';
 
@@ -11,6 +11,7 @@ interface ButtonProps {
   isBordered?: boolean;
   disabled?: boolean;
   emoji?: boolean;
+  style?: CSSProperties;
 }
 
 export function Button({
@@ -22,6 +23,8 @@ export function Button({
   isBordered = false,
   disabled,
   emoji = false,
+  style,
+  ...props
 }: ButtonProps) {
   return (
     <Container
@@ -31,6 +34,8 @@ export function Button({
       $emoji={emoji}
       onClick={() => onClick?.()}
       disabled={disabled}
+      style={style}
+      {...props}
     >
       <Text $color={color} $emoji={emoji}>
         {children}

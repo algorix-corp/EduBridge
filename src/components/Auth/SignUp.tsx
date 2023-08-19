@@ -70,7 +70,11 @@ export function SignUp() {
   };
   return (
     <Container>
-      <Form>
+      <Form
+        style={{
+          border: 'none',
+        }}
+      >
         <FormGroup onSubmit={form.onSubmit(values => login(values))}>
           <TextInput
             withAsterisk

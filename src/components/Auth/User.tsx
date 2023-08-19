@@ -64,7 +64,11 @@ export function User() {
   if (data) {
     return (
       <Container>
-        <Form>
+        <Form
+          style={{
+            border: 'none',
+          }}
+        >
           <InfoGroup>
             <Title>Hello, {data.name} 👋</Title>
             <Info>
