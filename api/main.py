@@ -5,6 +5,7 @@ from sqlmodel import SQLModel
 import api.routes.academy
 import api.routes.auth
 import api.routes.building
+import api.routes.function
 import api.routes.join_lecture
 import api.routes.lecture
 import api.routes.reservation
@@ -18,7 +19,10 @@ import api.tools.env
 app = FastAPI()
 
 origins = [
-    "*"
+    "http://localhost:3000",
+    "http://localhost",
+    "http://ja2023api.algorix.io",
+    "https://ja2023api.algorix.io",
 ]
 
 app.add_middleware(
@@ -38,6 +42,7 @@ app.include_router(api.routes.tuition_bill.router)
 app.include_router(api.routes.user.router)
 app.include_router(api.routes.join_lecture.router)
 app.include_router(api.routes.auth.router)
+app.include_router(api.routes.function.router)
 
 
 @app.on_event("startup")
