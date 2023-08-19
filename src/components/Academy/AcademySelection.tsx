@@ -8,7 +8,16 @@ export function AcademySelection() {
     <div>
       <SelectionArea>
         <SelectionCard>
-          <StyledCard shadow="sm" padding="lg" radius="md">
+          <Card
+            style={{
+              backgroundColor: '#090909',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+            shadow="sm"
+            padding="lg"
+            radius="md"
+          >
             <Card.Section>
               <Image src="" height={300} alt={'student management'} />
             </Card.Section>
@@ -22,10 +31,19 @@ export function AcademySelection() {
             >
               Student Management
             </Button>
-          </StyledCard>
+          </Card>
         </SelectionCard>
         <SelectionCard>
-          <StyledCard shadow="sm" padding="lg" radius="md">
+          <Card
+            style={{
+              backgroundColor: '#090909',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+            shadow="sm"
+            padding="lg"
+            radius="md"
+          >
             <Card.Section>
               <Image src="" height={300} alt={'room reservation'} />
             </Card.Section>
@@ -39,7 +57,7 @@ export function AcademySelection() {
             >
               Room Reservation
             </Button>
-          </StyledCard>
+          </Card>
         </SelectionCard>
       </SelectionArea>
     </div>
@@ -59,10 +77,4 @@ const SelectionArea = styled.div`
   align-items: center;
   height: 100vh;
   background-color: #040404;
-`;
-
-const StyledCard = styled(Card)`
-  background-color: #090909;
-  color: white;
-  cursor: pointer;
 `;
