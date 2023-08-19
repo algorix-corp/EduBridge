@@ -1,146 +1,87 @@
+from sqlalchemy import or_, and_
+
 from api.routes._imports import *
 
 router = APIRouter(
-    prefix="",
+    prefix="/reservation",
     tags=["reservation"],
 )
 
 
-class ReservationIn(BaseModel):
+class ReservationCreate(BaseModel):
     academy_id: int
     room_id: int
     start_date: date
     end_date: date
 
 
-@router.get("/building/{building_id}/reservation")
-def get_building_reservations(building_id: int, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        reservations = session.query(Reservation).filter(Reservation.building_id == building_id).all()
-        return reservations
-
-
-@router.post("/building/{building_id}/reservation")
-def create_building_reservation(building_id: int, reservation: ReservationIn,
-                                current_user=Depends(get_current_user)):
-    if reservation.start_date > reservation.end_date:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
-
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        reservation = Reservation(**reservation.dict())
-        # check if room reservation does not overlap with other reservations
-        reservations = session.query(Reservation).filter(Reservation.room_id == reservation.room_id).all()
-        for res in reservations:
-            if res.start_date <= reservation.start_date <= res.end_date or \
-                    res.start_date <= reservation.end_date <= res.end_date:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                    detail="Room is already reserved for this date")
-        session.add(reservation)
-        session.commit()
-        session.refresh(reservation)
+@router.post("/")
+def create_reservation(reservation: ReservationCreate, current_user: User = Depends(get_current_user)):
+    if current_user.role == "admin":
+        # check start_date and end_date do not overlap with existing reservations
+        reservations = Reservation.select().where(
+            and_(
+                Reservation.room_id == reservation.room_id,
+                or_(Reservation.start_date.between(reservation.start_date, reservation.end_date),
+                    Reservation.end_date.between(reservation.start_date, reservation.end_date))
+            )
+        )
+        if reservations:
+            raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
+        # check room is available
+        room = Room.get(reservation.room_id)
+        if not room.available:
+            raise HTTPException(status_code=400, detail="Room is not available")
+        # create reservation
+        reservation = Reservation.create(**reservation.dict())
         return reservation
-
-
-@router.get("/building/{building_id}/room/{room_id}/reservation")
-def get_room_reservations(building_id: int, room_id: int, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservations = session.query(Reservation).filter(Reservation.room_id == room_id).all()
-        return reservations
-
-
-@router.post("/building/{building_id}/room/{room_id}/reservation")
-def create_room_reservation(building_id: int, room_id: int, reservation: ReservationIn,
-                            current_user=Depends(get_current_user)):
-    if reservation.start_date > reservation.end_date:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
-
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = Reservation(**reservation.dict())
-        # check if room reservation does not overlap with other reservations
-        reservations = session.query(Reservation).filter(Reservation.room_id == room_id).all()
-        for res in reservations:
-            if res.start_date <= reservation.start_date <= res.end_date or \
-                    res.start_date <= reservation.end_date <= res.end_date:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                    detail="Room is already reserved for this date")
-        session.add(reservation)
-        session.commit()
-        session.refresh(reservation)
+    elif current_user.role == "academy":
+        # check user is owner of academy
+        academy = Academy.get(reservation.academy_id)
+        if academy.owner_id != current_user.id:
+            raise HTTPException(status_code=400, detail="User is not owner of academy")
+        # check start_date and end_date do not overlap with existing reservations
+        reservations = Reservation.select().where(
+            and_(
+                Reservation.room_id == reservation.room_id,
+                or_(Reservation.start_date.between(reservation.start_date, reservation.end_date),
+                    Reservation.end_date.between(reservation.start_date, reservation.end_date))
+            )
+        )
+        if reservations:
+            raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
+        # check room is available
+        room = Room.get(reservation.room_id)
+        if not room.available:
+            raise HTTPException(status_code=400, detail="Room is not available")
+        # create reservation
+        reservation = Reservation.create(**reservation.dict())
         return reservation
+    else:
+        raise HTTPException(status_code=400, detail="User is not authorized")
 
 
-@router.get("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
-def get_reservation(building_id: int, room_id: int, reservation_id: int,
-                    current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        return reservation
-
-
-@router.put("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
-def update_reservation(building_id: int, room_id: int, reservation_id: int, reservation: ReservationIn,
-                       current_user=Depends(get_current_user)):
-    if reservation.start_date > reservation.end_date:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
-
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        reservation.academy_id = reservation.academy_id
-        reservation.room_id = reservation.room_id
-        reservation.start_date = reservation.start_date
-        reservation.end_date = reservation.end_date
-        session.commit()
-        session.refresh(reservation)
-        return reservation
-
-
-@router.delete("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
-def delete_reservation(building_id: int, room_id: int, reservation_id: int,
-                       current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        session.delete(reservation)
-        session.commit()
-        return {"message": "Reservation deleted successfully"}
+@router.get("/")
+def get_reservations(current_user: User = Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            query = session.query(Reservation, Academy, Room).join(Academy).join(Room).all()
+            return query
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            # get academies that user own
+            academies = Academy.select().where(Academy.owner_id == current_user.id)
+            # get reservations that belong to academies that user own
+            query = session.query(Reservation, Academy, Room).join(Academy).join(Room).filter(
+                Reservation.academy_id.in_(academies)).all()
+            return query
+    elif current_user.role == "building":
+        with Session(engine) as session:
+            # get rooms that belong to buildings that user own
+            rooms = Room.select().where(Room.building_id == current_user.building_id)
+            # get reservations that belong to rooms that user own
+            query = session.query(Reservation, Academy, Room).join(Academy).join(Room).filter(
+                Reservation.room_id.in_(rooms)).all()
+            return query
+    else:
+        raise HTTPException(status_code=400, detail="User is not authorized")

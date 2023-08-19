@@ -17,20 +17,16 @@ class UserLogin(BaseModel):
 @router.post("/login")
 def login(user: UserLogin):
     with Session(engine) as session:
-        user = session.query(User).filter(User.email == user.email).first()
-        if user:
-            if checkpw(user.password.encode(), user.password_hash.encode()):
-                return {"Bearer": issue_auth_token(user.id)}
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid email or password",
-                )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password",
-            )
+        auth_user = session.query(User).filter(User.email == user.email).first()
+        if not auth_user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect email or password")
+
+        if not checkpw(user.password.encode(), auth_user.password.encode()):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
+
+        return {"message": "User successfully logged in",
+                "user": auth_user,
+                "token": issue_auth_token(auth_user.id)}
 
 
 @router.post("/auth")

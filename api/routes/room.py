@@ -1,17 +1,18 @@
 from api.routes._imports import *
-from api.routes.reservation import ReservationIn
+from api.tools.upload_image_to_s3 import upload_image_to_s3
 
 router = APIRouter(
-    prefix="",
+    prefix="/room",
     tags=["room"],
 )
 
 
-class RoomIn(BaseModel):
-    floor: int
-    unit_name: str
-    capacity: int
-    image_url: Optional[str] = None
+class RoomCreate(BaseModel):
+    building_id: int
+    floor: int = Field(ge=1)
+    unit_name: str = Field(min_length=1)
+    capacity: int = Field(ge=1)
+    image_dataurl: Optional[str] = None
     description: Optional[str] = None
     daily_price: int
     grid_x: int
@@ -20,139 +21,163 @@ class RoomIn(BaseModel):
 
 
 class RoomUpdate(BaseModel):
-    floor: Optional[int]
-    unit_name: Optional[str]
-    capacity: Optional[int]
-    image_url: Optional[str] = None
+    floor: Optional[int] = Field(ge=1)
+    unit_name: Optional[str] = Field(min_length=1)
+    capacity: Optional[int] = Field(ge=1)
+    image_dataurl: Optional[str] = None
     description: Optional[str] = None
-    daily_price: Optional[int]
-    grid_x: Optional[int]
-    grid_y: Optional[int]
+    daily_price: Optional[int] = None
+    grid_x: Optional[int] = None
+    grid_y: Optional[int] = None
     is_active: Optional[bool] = True
 
 
-@router.post("/building/{building_id}/room")
-def create_room(building_id: int, room: RoomIn, current_user=Depends(get_current_user)):
-    if current_user.role != "building" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        building = session.query(Building).filter(Building.id == building_id).first()
-        if not building:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
-        room = Room(**room.dict(), building_id=building_id)
-        session.add(room)
-        session.commit()
-        session.refresh(room)
-        return room
+@router.post("/")
+def create_room(new_room: RoomCreate, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            room = Room(
+                building_id=new_room.building_id,
+                floor=new_room.floor,
+                unit_name=new_room.unit_name,
+                capacity=new_room.capacity,
+                image_url=upload_image_to_s3(new_room.image_dataurl) if new_room.image_dataurl else None,
+                description=new_room.description,
+                daily_price=new_room.daily_price,
+                grid_x=new_room.grid_x,
+                grid_y=new_room.grid_y,
+                is_active=new_room.is_active,
+            )
+
+            session.add(room)
+            session.commit()
+            session.refresh(room)
+            return room
+    elif current_user.role == "building":
+
+        with Session(engine) as session:
+            room = Room(
+                building_id=new_room.building_id,
+                floor=new_room.floor,
+                unit_name=new_room.unit_name,
+                capacity=new_room.capacity,
+                image_url=upload_image_to_s3(new_room.image_dataurl) if new_room.image_dataurl else None,
+                description=new_room.description,
+                daily_price=new_room.daily_price,
+                grid_x=new_room.grid_x,
+                grid_y=new_room.grid_y,
+                is_active=new_room.is_active,
+            )
+
+            session.add(room)
+            session.commit()
+            session.refresh(room)
+            return room
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to create room.",
+        )
 
 
-@router.get("/building/{building_id}/room")
+@router.get("/")
+def get_rooms(current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            rooms = session.get(Room).all()
+            return rooms
+    elif current_user.role == "building":
+        with Session(engine) as session:
+            rooms = session.query(Room).filter(Room.building_id == current_user.building_id).all()
+            return rooms
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access rooms.",
+        )
+
+
+@router.get("/")
 def get_rooms(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         rooms = session.query(Room).filter(Room.building_id == building_id).all()
         return rooms
 
 
-@router.get("/building/{building_id}/room/{room_id}")
-def get_room(building_id: int, room_id: int, current_user=Depends(get_current_user)):
+@router.get("/{room_id}")
+def get_room(room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
+        room = session.get(Room, room_id)
         return room
 
 
-@router.put("/building/{building_id}/room/{room_id}")
-def update_room(building_id: int, room_id: int, room: RoomUpdate, current_user=Depends(get_current_user)):
+@router.put("/{room_id}")
+def update_room(room_id: int, room_update: RoomUpdate, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
+        room = session.get(Room, room_id)
         if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        if room.building_id != building_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        for key, value in room.dict().items():
-            if value is not None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Room not found",
+            )
+        if current_user.role == "admin":
+            room_data = room_update.dict(exclude_unset=True)
+            if room_data["image_dataurl"]:
+                room_data["image_url"] = upload_image_to_s3(room_data["image_dataurl"])
+                del room_data["image_dataurl"]
+            for key, value in room_data.items():
                 setattr(room, key, value)
-        session.commit()
-        session.refresh(room)
-        return room
+            session.add(room)
+            session.commit()
+            session.refresh(room)
+            return room
+        elif current_user.role == "building":
+            if current_user.building_id != room.building_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this room.",
+                )
+            room_data = room_update.dict(exclude_unset=True)
+            if room_data["image_dataurl"]:
+                room_data["image_url"] = upload_image_to_s3(room_data["image_dataurl"])
+                del room_data["image_dataurl"]
+            for key, value in room_data.items():
+                setattr(room, key, value)
+            session.add(room)
+            session.commit()
+            session.refresh(room)
+            return room
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this room.",
+            )
 
 
-@router.delete("/building/{building_id}/room/{room_id}")
-def delete_room(building_id: int, room_id: int, current_user=Depends(get_current_user)):
+@router.delete("/{room_id}")
+def delete_room(room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
+        room = session.get(Room, room_id)
         if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        if room.building_id != building_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        session.delete(room)
-        session.commit()
-        return {"message": "Room deleted successfully"}
-
-
-@router.get("/room/{room_id}/reservation")
-def get_room_reservations(room_id: int, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservations = session.query(Reservation).filter(Reservation.room_id == room_id).all()
-        return reservations
-
-
-@router.get("/room/{room_id}/reservation/{reservation_id}")
-def get_room_reservation(room_id: int, reservation_id: int, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        return reservation
-
-
-@router.post("/room/{room_id}/reservation")
-def create_room_reservation(room_id: int, reservation: ReservationIn, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = Reservation(**reservation.dict(), room_id=room_id)
-        session.add(reservation)
-        session.commit()
-        session.refresh(reservation)
-        return reservation
-
-
-@router.put("/room/{room_id}/reservation/{reservation_id}")
-def update_room_reservation(room_id: int, reservation_id: int, reservation: ReservationIn,
-                            current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        for key, value in reservation.dict().items():
-            if value is not None:
-                setattr(reservation, key, value)
-        session.commit()
-        session.refresh(reservation)
-        return reservation
-
-
-@router.delete("/room/{room_id}/reservation/{reservation_id}")
-def delete_room_reservation(room_id: int, reservation_id: int, current_user=Depends(get_current_user)):
-    with Session(engine) as session:
-        room = session.query(Room).filter(Room.id == room_id).first()
-        if not room:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
-        reservation = session.query(Reservation).filter(Reservation.id == reservation_id).first()
-        if not reservation:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reservation not found")
-        session.delete(reservation)
-        session.commit()
-        return {"message": "Reservation deleted successfully"}
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Room not found",
+            )
+        if current_user.role == "admin":
+            session.delete(room)
+            session.commit()
+            return {"message": "Room deleted successfully."}
+        elif current_user.role == "building":
+            if current_user.building_id != room.building_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this room.",
+                )
+            session.delete(room)
+            session.commit()
+            return {"message": "Room deleted successfully."}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this room.",
+            )
