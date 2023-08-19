@@ -121,5 +121,4 @@ def get_academy_students(academy_id: int, current_user=Depends(get_current_user)
 
         students = session.query(Student).filter(Student.academy_id == academy_id).all()
 
-        student_ids = [student.id for student in students]
-        return student_ids
+        return students
