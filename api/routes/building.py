@@ -69,7 +69,8 @@ def update_building(building_id: int, building: BuildingUpdate, current_user=Dep
         building_data = building.dict()
         update_data = building.dict(exclude_unset=True)
         updated_building = Building(**building_data, **update_data)
-        session.add(updated_building)
+        # session.add(updated_building)
+        session.merge(updated_building)
         session.commit()
         session.refresh(updated_building)
         return {"message": "Building updated successfully", "building": updated_building}
