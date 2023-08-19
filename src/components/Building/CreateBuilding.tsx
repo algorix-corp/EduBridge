@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Group } from '@mantine/core';
+import { Group, rem } from '@mantine/core';
 import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { TextInput } from '../../global/TextInput.tsx';
 import { FileInput } from '../../global/FileInput.tsx';
 import { ReactComponent as ReturnSVG } from '../../assets/return.svg';
+import { IconUpload } from '@tabler/icons-react';
 
 export function CreateBuilding() {
   const [disabled, setDisabled] = useState<boolean>(false);
@@ -87,6 +88,7 @@ export function CreateBuilding() {
             label="Building Image"
             {...form.getInputProps('image')}
             withAsterisk
+            icon={<IconUpload size={rem(14)} />}
             accept="image/png,image/jpeg"
           />
           <Group mt={50}>
