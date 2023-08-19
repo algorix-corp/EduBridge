@@ -25,6 +25,10 @@ body {
   padding: 0;
 }
 
+.gridjs-head {
+  margin-bottom: 20px !important;
+}
+
 .gridjs-search-input {
   border: 2px solid #e9e9f2 !important;
   border-radius: 7px !important;
@@ -33,13 +37,60 @@ body {
   height: 40px;
   padding: 0 15px 0 15px !important;
   font-size: 16px !important;
+
+  box-shadow: none !important;
 }
 
 .gridjs-search-input:focus {
-  border-color: #e9e9f2;
-  outline: none;
+  border-color: #e9e9f2 !important;
 }
 
 .gridjs-search-input::placeholder {
-  color: #b8b8cc;
+  color: #b8b8cc !important;
+}
+
+.gridjs-footer {
+  box-shadow: none !important;
+  border: 2px solid #313135 !important;
+  margin-top: -2px;
+}
+
+.gridjs-wrapper {
+  box-shadow: none !important;
+  border-radius: 10px 10px 0 0 !important;
+  overflow-x: hidden;
+
+  border: 2px solid #313135 !important;
+}
+
+.gridjs-th-sort {
+  border-bottom: 4px solid #313135 !important;
+  background-color: #ffffff;
+  transition: background-color ease 150ms;
+}
+
+.gridjs-th-sort:hover {
+  background-color: #ededf2;
+}
+
+.gridjs-th-content {
+  color: #313135;
+}
+
+.gridjs-pages button {
+  border: 2px solid #313135 !important;
+}
+
+.gridjs-pages button:not(:last-child) {
+  border-right: none !important;
+  background-color: #ffffff;
+  transition: background-color ease 150ms;
+}
+
+.gridjs-pagination .gridjs-pages button.gridjs-currentPage {
+  background-color: #ededf2;
+}
+
+.gridjs-pagination .gridjs-summary {
+  margin-top: 2.5px !important;
 }

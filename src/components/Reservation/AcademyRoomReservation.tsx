@@ -1,9 +1,10 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Image } from '@mantine/core';
+import { Button } from '@mantine/core';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import styled from 'styled-components';
 
 export function AcademyRoomReservation() {
-  const navigate = useNavigate();
   return (
     <div>
     </div>
