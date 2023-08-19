@@ -96,7 +96,7 @@ def create_student(new_student: StudentCreate, current_user=Depends(get_current_
 def get_students(current_user=Depends(get_current_user)):
     if current_user.role == "admin":
         with Session(engine) as session:
-            students = session.get(Student).all()
+            students = session.query(Student).all()
             return students
     elif current_user.role == "academy":
         with Session(engine) as session:
