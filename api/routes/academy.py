@@ -88,3 +88,22 @@ def delete_academy(academy_id: int, current_user=Depends(get_current_user)):
         session.delete(academy)
         session.commit()
         return {"message": "Academy deleted successfully"}
+
+
+@router.get("/{academy_id}/stu_bills")
+def get_academy_student_bills(academy_id: int, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "academy":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    with Session(engine) as session:
+        academy = session.query(Academy).filter(Academy.id == academy_id).first()
+        if not academy:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
+
+        # query lectures
+        lectures = session.query(Lecture).filter(Lecture.academy_id == academy_id).all()
+        lecture_ids = [lecture.id for lecture in lectures]
+
+        # query TuitionBills
+        tuition_bills = session.query(TuitionBill).filter(TuitionBill.lecture_id.in_(lecture_ids)).all()
+        return tuition_bills
