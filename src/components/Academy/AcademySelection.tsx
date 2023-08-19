@@ -1,80 +1,63 @@
-import { useNavigate } from 'react-router-dom';
-import { Button, Card, Image } from '@mantine/core';
+// import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Form } from '../../global/Form';
+import { colors } from '../../colors';
 
 export function AcademySelection() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+
   return (
-    <div>
-      <SelectionArea>
-        <SelectionCard>
-          <Card
-            style={{
-              backgroundColor: '#090909',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-            shadow="sm"
-            padding="lg"
-            radius="md"
-          >
-            <Card.Section>
-              <Image src="" height={300} alt={'student management'} />
-            </Card.Section>
-            <Button
-              variant="light"
-              color="yellow"
-              fullWidth
-              mt="md"
-              radius="md"
-              onClick={() => navigate(`/academy/students`)}
-            >
-              Student Management
-            </Button>
-          </Card>
-        </SelectionCard>
-        <SelectionCard>
-          <Card
-            style={{
-              backgroundColor: '#090909',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-            shadow="sm"
-            padding="lg"
-            radius="md"
-          >
-            <Card.Section>
-              <Image src="" height={300} alt={'room reservation'} />
-            </Card.Section>
-            <Button
-              variant="light"
-              color="yellow"
-              fullWidth
-              mt="md"
-              radius="md"
-              onClick={() => navigate(`/reservation/academy`)}
-            >
-              Room Reservation
-            </Button>
-          </Card>
-        </SelectionCard>
-      </SelectionArea>
-    </div>
+    <Container>
+      <FormGroup>
+        <SelectForm
+          style={{
+            float: 'left',
+          }}
+        >
+          <Title>Student Management</Title>
+        </SelectForm>
+        <SelectForm
+          style={{
+            float: 'right',
+          }}
+        >
+          <Title>Room Reservation</Title>
+        </SelectForm>
+      </FormGroup>
+    </Container>
   );
 }
 
-const SelectionCard = styled.div`
-  width: 380px;
-  padding: 20px;
+const Container = styled.div`
+  width: 100vw;
+  height: calc(100vh - 100px);
 `;
 
-const SelectionArea = styled.div`
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #040404;
+const FormGroup = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 1100px;
+  height: 350px;
+
+  background-color: red;
+`;
+
+const Title = styled.p`
+  font-size: 26px;
+  font-weight: 600;
+`;
+
+const SelectForm = styled(Form)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid ${colors.black};
+
+  width: 500px;
+  height: 100%;
+  background-color: blue;
 `;

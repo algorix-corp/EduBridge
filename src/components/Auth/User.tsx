@@ -123,7 +123,10 @@ export function User() {
       <LoadingOverlay visible={data === ProfileInit} />
       <Form
         style={{
-          border: 'none',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         }}
       >
         <InfoGroup>
@@ -240,7 +243,7 @@ const Title = styled.p`
   font-size: 30px;
   font-weight: 700;
 
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 `;
 
 const Info = styled.div`
@@ -291,7 +294,7 @@ const ProfileEdit = styled.input`
     border-left: 0;
     border-right: 0;
     border-top: 0;
-    border-bottom: 2px solid ${colors.black};
+    border-bottom: 2px solid ${colors.blue};
     outline: none;
   }
 `;
