@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useForm } from '@mantine/form';
-import { Group, PasswordInput, Select, TextInput } from '@mantine/core';
+import { Group } from '@mantine/core';
 import { Button } from '../../global/Button';
 import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,9 @@ import { useRecoilState } from 'recoil';
 import { loggedInState } from '../../states';
 import { Form } from '../../global/Form.tsx';
 import { checkEmail } from '../../global/function/index.ts';
+import { TextInput } from '../../global/TextInput.tsx';
+import { PasswordInput } from '../../global/PasswordInput.tsx';
+import { SelectInput } from '../../global/SelectInput.tsx';
 
 export function SignUp() {
   const navigate = useNavigate();
@@ -68,7 +71,7 @@ export function SignUp() {
   return (
     <Container>
       <Form>
-        <form onSubmit={form.onSubmit(values => login(values))}>
+        <FormGroup onSubmit={form.onSubmit(values => login(values))}>
           <TextInput
             withAsterisk
             label="Name"
@@ -97,7 +100,7 @@ export function SignUp() {
             {...form.getInputProps('phone')}
             disabled={disabled}
           />
-          <Select
+          <SelectInput
             withAsterisk
             label="Role"
             placeholder="Choose your role"
@@ -117,7 +120,7 @@ export function SignUp() {
               Sign Up
             </Button>
           </Group>
-        </form>
+        </FormGroup>
       </Form>
     </Container>
   );
@@ -136,4 +139,10 @@ const Container = styled.div`
   background-position: center;
 
   z-index: -1;
+`;
+
+const FormGroup = styled.form`
+  & div:not(:last-child) {
+    margin-bottom: 15px;
+  }
 `;
