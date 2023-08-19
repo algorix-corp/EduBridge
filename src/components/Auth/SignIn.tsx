@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { colors } from '../../colors/index.ts';
 import linePNG from '../../assets/line.png';
+import { useAuthContext } from './AuthContext.tsx';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -30,7 +31,8 @@ export function SignIn() {
       },
     },
   });
-
+ 
+const { setAuthenticated } = useAuthContext();
   interface logindata {
     email: string;
     password: string;
@@ -45,10 +47,11 @@ export function SignIn() {
       password: values.password,
     };
     api
-      .post('/auth/login', body)
+      .post('/login', body)
       .then(r => {
         localStorage.setItem('token', r.data.token);
         toast.success('Successfully logged in!', { id: randomstr });
+        setAuthenticated(true);
         navigate('/');
       })
       .catch(() => {

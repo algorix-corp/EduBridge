@@ -6,6 +6,7 @@ import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthContext } from './Auth/AuthContext';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -13,9 +14,12 @@ interface HeaderProps {
 
 export function Header({ type }: HeaderProps) {
   const [scroll] = useRecoilState(scrollYState);
-
+  const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const signInLink = isAuthenticated ? '/building' : '/auth/signin';
+  const signUpLink = isAuthenticated ? '/academy' : '/auth/signup';
 
   const Logo = type === 'white' ? BlackLogo : WhiteLogo;
 
@@ -34,32 +38,34 @@ export function Header({ type }: HeaderProps) {
       {type === 'white' ? (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/auth/signin')}
+            onClick={() => navigate(signInLink)}
             backgroundColor={colors.black}
             color={colors.black}
             isBordered
           >
-            Sign In
+            {isAuthenticated ? 'Building Owner' : 'Sign In'}
           </Button>
           <Button
-            onClick={() => navigate('/auth/signup')}
+            onClick={() => navigate(signUpLink)}
             backgroundColor={colors.blue}
             color={colors.white}
           >
-            Sign Up
+            {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
           </Button>
         </ButtonGroup>
       ) : (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/auth/signin')}
+            onClick={() => navigate(signInLink)}
             backgroundColor={colors.white}
             color={colors.white}
             isBordered
           >
-            Sign In
+            {isAuthenticated ? 'Building Owner' : 'Sign In'}
           </Button>
-          <Button onClick={() => navigate('/auth/signup')}>Sign Up</Button>
+          <Button onClick={() => navigate(signUpLink)}>
+          {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
+          </Button>
         </ButtonGroup>
       )}
     </Container>
