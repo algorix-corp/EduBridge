@@ -31,8 +31,8 @@ export function SignIn() {
       },
     },
   });
- 
-const { setAuthenticated } = useAuthContext();
+
+  const { setAuthenticated } = useAuthContext();
   interface logindata {
     email: string;
     password: string;
@@ -93,25 +93,35 @@ const { setAuthenticated } = useAuthContext();
 }
 
 const Container = styled.div`
-  display: flex;
+  position: absolute;
+  top: 0;
 
-  height: calc(100vh - 120px);
+  width: 100vw;
+  height: 100vh;
 
   background-color: ${colors.blue};
   background-image: url('${linePNG}');
   background-attachment: fixed;
   background-position: center;
+
+  z-index: -1;
 `;
 
 const BoxContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   width: 500px;
   background-color: ${colors.white};
-  border-radius: 10px;
+
+  border-radius: 20px;
+  border: 2px solid ${colors.gray};
 `;
 
 const SignInBox = styled.div`
   padding: 30px;
   width: 500px;
   margin: 0 auto;
-  height: auto;
 `;

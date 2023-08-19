@@ -64,7 +64,7 @@ export function Header({ type }: HeaderProps) {
             {isAuthenticated ? 'Building Owner' : 'Sign In'}
           </Button>
           <Button onClick={() => navigate(signUpLink)}>
-          {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
+            {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
           </Button>
         </ButtonGroup>
       )}
