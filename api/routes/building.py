@@ -40,7 +40,7 @@ def create_building(building: BuildingCreate, current_user=Depends(get_current_u
 
 @router.get("/")
 def get_buildings(current_user=Depends(get_current_user)):
-    if current_user.role == "admin":
+    if current_user.role == "admin" or current_user.role == "academy":
         with Session(engine) as session:
             buildings = session.query(Building).all()
             return buildings
@@ -48,12 +48,6 @@ def get_buildings(current_user=Depends(get_current_user)):
     elif current_user.role == "building":
         with Session(engine) as session:
             buildings = session.query(Building).filter(Building.owner_id == current_user.id).all()
-            return buildings
-
-    elif current_user.role == "academy":
-        with Session(engine) as session:
-            buildings = session.query(Building).with_entities(Building.id, Building.name, Building.address,
-                                                              Building.description, Building.image_url).all()
             return buildings
 
     else:
