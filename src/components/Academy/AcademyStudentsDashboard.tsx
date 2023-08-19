@@ -2,6 +2,8 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import { RowSelection } from 'gridjs/plugins/selection';
 
 export function AcademyStudentsDashboard() {

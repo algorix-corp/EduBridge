@@ -131,7 +131,7 @@ const Management = styled(ManagementSVG)`
 
 const Reservation = styled(ReservationSVG)`
   position: relative;
-  top: 22.5xpx;
+  top: 22.5px;
   left: 50%;
   transform: translateX(-50%);
 

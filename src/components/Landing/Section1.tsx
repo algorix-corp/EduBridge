@@ -40,7 +40,7 @@ export function Section1() {
   return (
     <Container>
       <Title $scroll={scroll} $startPoint={-500} $endPoint={1500}>
-        ❛ How can you start a small tutoring{'\n'}without a place to teach? 🤔 ❜
+        ❝ How can you start a small tutoring{'\n'}without a place to teach? 🤔 ❞
       </Title>
       <Video
         className="video"
