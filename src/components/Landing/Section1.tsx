@@ -119,7 +119,7 @@ const Video = styled.video<{
   $transform: number;
 }>`
   position: fixed;
-
+  object-fit: cover;
   width: 100vw;
   height: 100vh;
 
