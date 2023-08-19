@@ -72,7 +72,10 @@ export function SignUp() {
     <Container>
       <Form
         style={{
-          border: 'none',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         }}
       >
         <FormGroup onSubmit={form.onSubmit(values => login(values))}>

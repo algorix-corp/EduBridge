@@ -17,19 +17,13 @@ export function Form({ children, ...props }: Form) {
 }
 
 const Container = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
   background-color: ${colors.white};
 
-  border-radius: 16px;
-  border: 2px solid ${colors.black};
+  border-radius: 20px;
 `;
 
 const Box = styled.div`
   padding: 30px;
-  width: 500px;
+  width: 550px;
   margin: 0 auto;
 `;

@@ -16,7 +16,6 @@ import { Toaster } from 'react-hot-toast';
 import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 import { AcademyStudentsDashboard } from './components/Academy/AcademyStudentsDashboard.tsx';
 import { User } from './components/Auth/User.tsx';
-import { ProgressHeader } from './components/ProgressHeader.tsx';
 import { AcademyRoomReservation } from './components/Reservation/AcademyRoomReservation.tsx';
 
 const router = createBrowserRouter([
@@ -70,21 +69,9 @@ const router = createBrowserRouter([
         path: 'students',
         element: <AcademyStudentsDashboard />,
       },
-    ],
-  },
-  {
-    path: '/reservation',
-    element: (
-      <>
-      <ProgressHeader/>
-      <Outlet/>
-      </>
-    ),
-    children: [
       {
-        path: 'academy',
-        element: <AcademyRoomReservation/>
-
+        path: 'reservation',
+        element: <AcademyRoomReservation />,
       },
     ],
   },
@@ -121,7 +108,6 @@ const router = createBrowserRouter([
     element: <NotFound />,
   },
 ]);
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <MantineProvider withGlobalStyles withNormalizeCSS>
     <DatesProvider settings={{ firstDayOfWeek: 0 }}>
