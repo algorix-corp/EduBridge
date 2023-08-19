@@ -24,3 +24,22 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.gridjs-search-input {
+  border: 2px solid #e9e9f2 !important;
+  border-radius: 7px !important;
+
+  width: 100% !important;
+  height: 40px;
+  padding: 0 15px 0 15px !important;
+  font-size: 16px !important;
+}
+
+.gridjs-search-input:focus {
+  border-color: #e9e9f2;
+  outline: none;
+}
+
+.gridjs-search-input::placeholder {
+  color: #b8b8cc;
+}

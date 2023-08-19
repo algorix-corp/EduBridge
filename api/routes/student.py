@@ -1,122 +1,218 @@
 from api.routes._imports import *
+from api.tools.database import engine, Session
+from api.tools.upload_image_to_s3 import upload_image_to_s3
 
 router = APIRouter(
-    prefix="",
+    prefix="/student",
     tags=["student"],
 )
 
 
-class StudentIn(BaseModel):
+class StudentCreate(BaseModel):
     academy_id: int
-    name: str
-    school: str
-    grade: int
+    name: str = Field(min_length=3)
+    school: str = Field(min_length=3)
+    grade: int = Field(ge=1, le=12)
     phone: Optional[str] = None
-    parent_phone: str
-    address: str
+    parent_phone: str = Field(min_length=10)
+    address: str = Field(min_length=3)
     memo: Optional[str] = None
-    image_url: Optional[str] = None
+    image_dataurl: Optional[str] = None
 
 
 class StudentUpdate(BaseModel):
-    name: Optional[str]
-    school: Optional[str]
-    grade: Optional[int]
-    phone: Optional[str] = None
-    parent_phone: Optional[str]
-    address: Optional[str]
+    name: Optional[str] = Field(min_length=3)
+    school: Optional[str] = Field(min_length=3)
+    grade: Optional[int] = Field(ge=1, le=12)
+    phone: Optional[str] = Field(min_length=10)
+    parent_phone: Optional[str] = Field(min_length=10)
+    address: Optional[str] = Field(min_length=3)
     memo: Optional[str] = None
-    image_url: Optional[str] = None
+    image_dataurl: Optional[str] = None
 
 
-@router.post("/academy/{academy_id}/student")
-def create_student(academy_id: int, student: StudentIn, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+@router.post("/")
+def create_student(new_student: StudentCreate, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            student = Student(
+                academy_id=new_student.academy_id,
+                name=new_student.name,
+                school=new_student.school,
+                grade=new_student.grade,
+                phone=new_student.phone,
+                parent_phone=new_student.parent_phone,
+                address=new_student.address,
+                memo=new_student.memo,
+                image_url=upload_image_to_s3(new_student.image_dataurl) if new_student.image_dataurl else None,
+            )
+
+            session.add(student)
+            session.commit()
+            session.refresh(student)
+            return student
+    elif current_user.role == "academy":
+
+        if current_user.academy_id != new_student.academy_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this academy.",
+            )
+
+        with Session(engine) as session:
+            student = Student(
+                academy_id=current_user.academy_id,
+                name=new_student.name,
+                school=new_student.school,
+                grade=new_student.grade,
+                phone=new_student.phone,
+                parent_phone=new_student.parent_phone,
+                address=new_student.address,
+                memo=new_student.memo,
+                image_url=upload_image_to_s3(new_student.image_dataurl) if new_student.image_dataurl else None,
+            )
+
+            session.add(student)
+            session.commit()
+            session.refresh(student)
+            return student
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this academy.",
+        )
+
+
+@router.get("/")
+def get_students(current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            students = session.get(Student).all()
+            return students
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            students = session.get(Student).filter(Student.academy_id == current_user.academy_id).all()
+            return students
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this academy.",
+        )
+
+
+@router.get("/{student_id}")
+def get_student(student_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = Student(**student.dict())
-        session.add(student)
-        session.commit()
-        session.refresh(student)
-        return student
-
-
-@router.get("/academy/{academy_id}/student")
-def get_students(academy_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        students = session.query(Student).filter(Student.academy_id == academy_id).all()
-        return students
-
-
-@router.get("/academy/{academy_id}/student/{student_id}")
-def get_student(academy_id: int, student_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
+        student = session.get(Student, student_id)
         if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        return student
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+        if current_user.role == "admin":
+            return student
+        elif current_user.role == "academy":
+            if current_user.academy_id != student.academy_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this academy.",
+                )
+            return student
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this academy.",
+            )
 
 
-@router.put("/academy/{academy_id}/student/{student_id}")
-def update_student(academy_id: int, student_id: int, student: StudentUpdate,
-                   current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+@router.put("/{student_id}")
+def update_student(student_id: int, student_update: StudentUpdate, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
+        student = session.get(Student, student_id)
         if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        for var, value in student.dict().items():
-            if var == "id":
-                continue
-            if getattr(student, var) != getattr(student, var):
-                setattr(student, var, value)
-        session.commit()
-        session.refresh(student)
-        return student
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+        if current_user.role == "admin":
+            if student_update.name:
+                student.name = student_update.name
+            if student_update.school:
+                student.school = student_update.school
+            if student_update.grade:
+                student.grade = student_update.grade
+            if student_update.phone:
+                student.phone = student_update.phone
+            if student_update.parent_phone:
+                student.parent_phone = student_update.parent_phone
+            if student_update.address:
+                student.address = student_update.address
+            if student_update.memo:
+                student.memo = student_update.memo
+            if student_update.image_dataurl:
+                student.image_url = upload_image_to_s3(student_update.image_dataurl)
+            session.add(student)
+            session.commit()
+            session.refresh(student)
+            return student
+        elif current_user.role == "academy":
+            if current_user.academy_id != student.academy_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this academy.",
+                )
+            if student_update.name:
+                student.name = student_update.name
+            if student_update.school:
+                student.school = student_update.school
+            if student_update.grade:
+                student.grade = student_update.grade
+            if student_update.phone:
+                student.phone = student_update.phone
+            if student_update.parent_phone:
+                student.parent_phone = student_update.parent_phone
+            if student_update.address:
+                student.address = student_update.address
+            if student_update.memo:
+                student.memo = student_update.memo
+            if student_update.image_dataurl:
+                student.image_url = upload_image_to_s3(student_update.image_dataurl)
+            session.add(student)
+            session.commit()
+            session.refresh(student)
+            return student
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this academy.",
+            )
 
 
-@router.delete("/academy/{academy_id}/student/{student_id}")
-def delete_student(academy_id: int, student_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+@router.delete("/{student_id}")
+def delete_student(student_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
+        student = session.get(Student, student_id)
         if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        session.delete(student)
-        session.commit()
-        return {"message": "Student deleted successfully"}
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+        if current_user.role == "admin":
+            session.delete(student)
+            session.commit()
+            return {"message": "Student deleted"}
+        elif current_user.role == "academy":
+            if current_user.academy_id != student.academy_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this academy.",
+                )
+            session.delete(student)
+            session.commit()
+            return {"message": "Student deleted"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to access this academy.",
+            )
