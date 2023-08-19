@@ -3,12 +3,6 @@ import styled from 'styled-components';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
 
-const DashboardContainer = styled.div`
-  margin: 0 auto;
-  width: 80%;
-  max-width: 1200px;
-`;
-
 export function AcademyStudentsDashboard() {
   const [studentStatuses] = useState([
     {
@@ -96,7 +90,7 @@ export function AcademyStudentsDashboard() {
   ]);
 
   return (
-    <DashboardContainer>
+    <Container>
       <Grid
         data={data}
         columns={columns}
@@ -105,6 +99,19 @@ export function AcademyStudentsDashboard() {
         sort={true}
         className="table"
       />
-    </DashboardContainer>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+
+  position: relative;
+  top: 100px;
+
+  margin: 0 auto;
+  width: 100vw;
+  height: calc(100vh - 100px);
+  max-width: 1200px;
+`;
