@@ -27,27 +27,6 @@ interface Student {
 }
 
 export function AcademyStudentsDashboard() {
-  const [studentStatuses] = useState([
-    {
-      studentName: '일론머스크',
-      subject: 'Math',
-      paymentStatus: 'Paid',
-      description: '도지도지',
-    },
-    {
-      studentName: '민건',
-      subject: 'Dobi',
-      paymentStatus: 'Paid',
-      description: '미기미기',
-    },
-    {
-      studentName: '일론머스크',
-      subject: 'Math',
-      paymentStatus: 'Paid',
-      description: '도지도지',
-    },
-  ]);
-
   const [academy_data, academy_setData] = useState<Academy | null>(null);
   const [grid_data, grid_setData] = useState<[Student] | null>(null);
 
@@ -68,47 +47,54 @@ export function AcademyStudentsDashboard() {
       const academyId = academy_data.map(item => item.id);
       console.log(academyId);
       api
-        .get(`/academy/${academyId}/stu_bills`)
+        .get(`/academy/${academyId}/students`)
         .then(response => {
           console.log(response.data);
           grid_setData(response.data);
         })
         .catch(() =>
-          toast.error('An error occurred while fetching stu_bills data.'),
+          toast.error('An error occurred while fetching students data.'),
         );
     }
   }, [academy_data]); // academy_data가 업데이트될 때마다 재실행
+  
 
-  const data = studentStatuses.map(status => [
-    status.studentName,
-    status.subject,
-    status.paymentStatus,
-    status.description,
-  ]);
+  const data = grid_data
+    ? grid_data.map(status => [
+        status.name,
+        status.grade,
+        status.phone,
+        status.memo,
+      ])
+    : [];
 
-  return (
-    <Container>
-      <Grid
-        data={data}
-        columns={[
-          {
-            id: 'Checkbox',
-            name: 'Select',
-            plugin: { component: RowSelection },
-          },
-          'Student Name',
-          'Subject',
-          'Payment Status',
-          'Desciption',
-        ]}
-        search={true}
-        sort={true}
-        pagination={true}
-        className="table"
-      />
-    </Container>
-  );
-}
+    return (
+        <Container>
+          {grid_data !== null ? (
+            <Grid
+              data={data}
+              columns={[
+                {
+                  id: 'Checkbox',
+                  name: 'Select',
+                  plugin: { component: RowSelection },
+                },
+                'Student Name',
+                'Grade',
+                'Phone Number',
+                'Memo',
+              ]}
+              search={true}
+              sort={true}
+              pagination={true}
+              className="table"
+            />
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Container>
+      );
+    }
 
 const Container = styled.div`
   display: flex;
