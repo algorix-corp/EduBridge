@@ -5,12 +5,6 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import api from '../../api/api.ts';
 import styled from 'styled-components';
 
-interface Building {
-  name: string;
-  address: string;
-  image_url: string;
-}
-
 export function AcademySelection() {
   const navigate = useNavigate();
   return (
@@ -27,7 +21,7 @@ export function AcademySelection() {
               fullWidth
               mt="md"
               radius="md"
-              onClick={() => navigate(`/building/detail/${index}`)}
+              onClick={() => navigate(`/academy/students`)}
             >
               Student Management
             </Button>
@@ -44,7 +38,7 @@ export function AcademySelection() {
               fullWidth
               mt="md"
               radius="md"
-              onClick={() => navigate(`/building/detail/${index}`)}
+              onClick={() => navigate(`/academy/reservation`)}
             >
               Room Reservation
             </Button>
