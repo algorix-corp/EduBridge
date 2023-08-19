@@ -1,11 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Button, Card, Group, Image, Text } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Group,
+  Image,
+  LoadingOverlay,
+  Text,
+} from '@mantine/core';
 import api from '../../api/api.ts';
-import styled from 'styled-components';
 import toast from 'react-hot-toast';
 import { IconPlus } from '@tabler/icons-react';
-
+import styled from 'styled-components';
 interface Building {
   id: number;
   name: string;
@@ -27,6 +33,7 @@ export function BuildingMain() {
   }, []);
   return (
     <div>
+      <LoadingOverlay visible={data === null} />
       <BuildingArea>
         <div>
           <Button onClick={() => navigate('/building/new')}>

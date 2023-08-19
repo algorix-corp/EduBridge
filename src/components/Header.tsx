@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/api.ts';
 import toast from 'react-hot-toast';
+import { LoadingOverlay } from '@mantine/core';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -21,19 +22,17 @@ export function Header({ type }: HeaderProps) {
   const [scroll] = useRecoilState(scrollYState);
   const navigate = useNavigate();
   const location = useLocation();
-  const [loggedin, setloggedin] = useState(!!token);
-  const [showbuilding, setshowbuilding] = useState<boolean>(false);
-  const [showacademy, setshowacademy] = useState<boolean>(false);
+  const [loggedin, setloggedin] = useState<boolean | null>(null);
+  const [showbuilding, setshowbuilding] = useState<boolean>(true);
+  const [showacademy, setshowacademy] = useState<boolean>(true);
   const [iswhite, setiswhite] = useState<boolean>(false);
   useEffect(() => {
     if (type === 'white') setiswhite(true);
     else setiswhite(false);
   }, [type]);
   useEffect(() => {
-    setloggedin(!!token);
-    if (!loggedin) {
-      setshowacademy(true);
-      setshowbuilding(true);
+    if (!token) {
+      setloggedin(false);
       return;
     }
     api
@@ -44,16 +43,17 @@ export function Header({ type }: HeaderProps) {
           setshowbuilding(true);
         } else if (r.data.role == 'building') {
           setshowacademy(false);
-          setshowbuilding(true);
         } else if (r.data.role == 'academy') {
-          setshowacademy(true);
           setshowbuilding(false);
         }
       })
       .catch(() => {
         toast.error('An error occurred while fetching data.');
+      })
+      .finally(() => {
+        setloggedin(true);
       });
-  }, [token]);
+  }, [token, loggedin]);
 
   const signInLink = loggedin ? '/building' : '/auth/signin';
   const signUpLink = loggedin ? '/academy' : '/auth/signup';
@@ -73,6 +73,7 @@ export function Header({ type }: HeaderProps) {
         }}
       />
       <ButtonGroup>
+        <LoadingOverlay visible={loggedin === null} />
         {showbuilding ? (
           <Button
             onClick={() => navigate(signInLink)}
