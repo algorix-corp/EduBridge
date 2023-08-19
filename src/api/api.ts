@@ -10,7 +10,7 @@ const api = axios.create({
 // Check if a token exists in local storage
 const token_1 = getRecoil(token);
 // If a token exists, set it in the request headers
-if (token_1) {
+if (token_1 != '') {
   api.defaults.headers.common['Authorization'] = `Bearer ${token_1}`;
 }
 

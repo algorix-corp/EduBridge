@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
 import { useRecoilState } from 'recoil';
-import { loggedInState } from '../../states';
+import { loggedInState, token } from '../../states';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -38,6 +38,8 @@ export function SignIn() {
     password: string;
   }
   const [, setLoggedin] = useRecoilState<boolean>(loggedInState);
+  const [, settoken] = useRecoilState<string>(token);
+
   const login = (values: logindata) => {
     const randomstr = Math.random().toString(36).substring(7);
     toast.loading('Logging in...', { id: randomstr });
@@ -49,7 +51,7 @@ export function SignIn() {
     api
       .post('/login', body)
       .then(r => {
-        localStorage.setItem('token', r.data.token);
+        settoken(r.data.token);
         toast.success('Successfully logged in!', { id: randomstr });
         setLoggedin(true);
         navigate('/');

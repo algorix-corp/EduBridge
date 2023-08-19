@@ -1,4 +1,4 @@
-import { atom, useRecoilState } from 'recoil';
+import { atom } from 'recoil';
 
 export const scrollYState = atom({
   key: 'scrollYState',
