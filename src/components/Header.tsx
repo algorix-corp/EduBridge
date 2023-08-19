@@ -24,7 +24,7 @@ export function Header() {
 const Container = styled.div<{
   $scroll: number;
 }>`
-  position: ${({ $scroll }) => ($scroll < 7000 ? 'fixed' : 'absolute')};
+  position: ${({ $scroll }) => ($scroll < 12500 ? 'fixed' : 'absolute')};
 
   width: 100vw;
   height: 120px;
@@ -50,4 +50,6 @@ const ButtonGroup = styled.div`
 
   margin-left: auto;
   height: 50px;
+
+  font-size: 16px;
 `;
