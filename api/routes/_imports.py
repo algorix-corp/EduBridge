@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from typing import Optional
 from api.tools.database import engine, Session
 from api.tools.get_current_user import get_current_user
+from datetime import datetime, date
 
 Academy(), Building(), JoinLecture(), Lecture(), Reservation(), Room(), Student(), TuitionBill(), User()
-BaseModel(), Optional, engine, Session, get_current_user
+BaseModel(), Optional, engine, Session, get_current_user, datetime, date
