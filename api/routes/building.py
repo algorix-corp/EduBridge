@@ -21,6 +21,10 @@ class BuildingUpdate(BaseModel):
     image_dataurl: Optional[str] = None
 
 
+class BuildingImageUpdate(BaseModel):
+    image_dataurl: str
+
+
 @router.post("/")
 def create_building(building: BuildingCreate, current_user=Depends(get_current_user)):
     if current_user.role != "admin" and current_user.role != "building":
@@ -82,6 +86,22 @@ def update_building(building_id: int, new_building: BuildingUpdate, current_user
         session.refresh(building)
 
         return {"message": "Building updated successfully", "building": building}
+
+
+@router.put("/{building_id}/image")
+def update_building_image(building_id: int, image: BuildingImageUpdate, current_user=Depends(get_current_user)):
+    with Session(engine) as session:
+        building = session.get(Building, building_id)
+        if not building:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
+        if building.owner_id != current_user.id and current_user.role != "admin":
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+        building.image_url = upload_image_to_s3(image.image_dataurl, building.name)
+        session.commit()
+        session.refresh(building)
+
+        return {"message": "Building image updated successfully", "building": building}
 
 
 @router.delete("/{building_id}")
