@@ -115,6 +115,7 @@ def pay_tuition_bill(tuition_bill_id: int):
     )
 
     with Session(engine) as session:
+        tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
         tuition_bill.stripe_session_id = stripe_session.id
         session.commit()
         session.refresh(tuition_bill)
