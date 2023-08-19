@@ -1,7 +1,7 @@
-![logo](https://github.com/algorix-corp/EduBridge/assets/93381265/f581c9ef-140b-443c-a704-d0824d1df2e7)
----
+## ![logo](https://github.com/algorix-corp/EduBridge/assets/93381265/f581c9ef-140b-443c-a704-d0824d1df2e7)
 
 ## .env
+
 ```
 # Server
 SERVER_ADDRESS=
@@ -34,6 +34,7 @@ S3_SECRET_ACCESS_KEY=
 ```
 
 ## Deploy
+
 ```
 docker-compose up -d
 uvicorn api.main:app --port 8000
