@@ -77,7 +77,7 @@ export function BuildingMain() {
                   fullWidth
                   mt="md"
                   radius="md"
-                  onClick={() => navigate(`/building/view/${index}`)}
+                  onClick={() => navigate(`/building/detail/${index}`)}
                 >
                   View Building
                 </Button>

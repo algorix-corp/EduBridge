@@ -9,6 +9,7 @@ import { BuildingMain } from './components/Building/BuildingMain.tsx';
 import { Landing } from './pages/Landing.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { RecoilRoot } from 'recoil';
+import { BuildingDetail } from './components/Building/BuildingDetail.tsx';
 
 const router = createBrowserRouter([
   {
@@ -40,8 +41,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'detail/:id',
-        element: <BuildingDetail />
-      }
+        element: <BuildingDetail />,
+      },
     ],
   },
   {
