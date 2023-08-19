@@ -93,7 +93,7 @@ const router = createBrowserRouter([
     path: '/user',
     element: (
       <>
-        <Header type="white" />
+        <Header type="transparent" />
         <User />
       </>
     ),

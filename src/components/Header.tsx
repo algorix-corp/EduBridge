@@ -1,12 +1,12 @@
 import styled, { css } from 'styled-components';
 import { ReactComponent as WhiteLogoSVG } from '../assets/logo_white.svg';
 import { ReactComponent as BlackLogoSVG } from '../assets/logo_black.svg';
+import { ReactComponent as UserSVG } from '../assets/user.svg';
 import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { IconUser } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 interface HeaderProps {
@@ -53,8 +53,9 @@ export function Header({ type }: HeaderProps) {
           </Button>
           <Button
             onClick={() => navigate(signUpLink)}
-            backgroundColor={colors.blue}
-            color={colors.white}
+            backgroundColor={colors.black}
+            color={colors.black}
+            isBordered
           >
             {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
@@ -63,8 +64,9 @@ export function Header({ type }: HeaderProps) {
               color={colors.white}
               backgroundColor={colors.black}
               onClick={() => navigate('/user')}
+              emoji
             >
-              <IconUser size={20} />
+              <UserSVG />
             </Button>
           ) : undefined}
         </ButtonGroup>
@@ -78,12 +80,17 @@ export function Header({ type }: HeaderProps) {
           >
             {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
-          <Button onClick={() => navigate(signUpLink)}>
+          <Button
+            onClick={() => navigate(signUpLink)}
+            backgroundColor={colors.white}
+            color={colors.white}
+            isBordered
+          >
             {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
           {loggedin ? (
-            <Button onClick={() => navigate('/user')}>
-              <IconUser size={20} />
+            <Button onClick={() => navigate('/user')} emoji>
+              <UserSVG />
             </Button>
           ) : undefined}
         </ButtonGroup>

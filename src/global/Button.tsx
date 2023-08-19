@@ -10,6 +10,7 @@ interface ButtonProps {
   color?: string;
   isBordered?: boolean;
   disabled?: boolean;
+  emoji?: boolean;
 }
 
 export function Button({
@@ -20,16 +21,20 @@ export function Button({
   color = colors.blue,
   isBordered = false,
   disabled,
+  emoji = false,
 }: ButtonProps) {
   return (
     <Container
       type={type}
       $backgroundColor={backgroundColor}
       $isBordered={isBordered}
+      $emoji={emoji}
       onClick={() => onClick?.()}
       disabled={disabled}
     >
-      <Text $color={color}>{children}</Text>
+      <Text $color={color} $emoji={emoji}>
+        {children}
+      </Text>
     </Container>
   );
 }
@@ -37,6 +42,7 @@ export function Button({
 const Container = styled.button<{
   $backgroundColor: string;
   $isBordered: boolean;
+  $emoji: boolean;
 }>`
   display: flex;
   align-items: center;
@@ -46,7 +52,14 @@ const Container = styled.button<{
   width: max-content;
   height: 50px;
 
-  padding: 0 25px 0 25px;
+  ${({ $emoji }) =>
+    $emoji
+      ? css`
+          width: 50px;
+        `
+      : css`
+          padding: 0 25px 0 25px;
+        `}
 
   scale: 1;
   cursor: pointer;
@@ -75,9 +88,21 @@ const Container = styled.button<{
 
 const Text = styled.p<{
   $color: string;
+  $emoji: boolean;
 }>`
   display: inline-block;
   color: ${({ $color }) => $color};
+
+  ${({ $emoji }) =>
+    $emoji
+      ? css`
+          width: 26px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        `
+      : null}
 
   font-weight: 600;
 `;
