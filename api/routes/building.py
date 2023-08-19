@@ -53,7 +53,7 @@ def get_buildings(current_user=Depends(get_current_user)):
     elif current_user.role == "academy":
         with Session(engine) as session:
             buildings = session.query(Building).with_entities(Building.id, Building.name, Building.address,
-                                                              Building.description, Building.image_url)
+                                                              Building.description, Building.image_url).all()
             return buildings
 
     else:
