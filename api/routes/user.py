@@ -12,7 +12,7 @@ router = APIRouter(
 class UserCreate(BaseModel):
     name: str = Field(min_length=3)
     email: str = EmailStr
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=4)
     phone: str = Field(min_length=10)
     role: str = ["admin", "building", "academy"]
     image_dataurl: Optional[str] = None
@@ -25,7 +25,7 @@ class UserUpdate(BaseModel):
 
 
 class PasswordUpdate(BaseModel):
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=4)
 
 
 @router.post("/")
