@@ -84,7 +84,7 @@ def get_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user
 
 
 @router.get("/{tuition_bill_id}/pay")
-def pay_tuition_bill(tuition_bill_id: int):
+def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
     with Session(engine) as session:
         tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
         if not tuition_bill or tuition_bill.is_paid:
@@ -110,7 +110,7 @@ def pay_tuition_bill(tuition_bill_id: int):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://ja2023api.algorix.io/tuition_bill/{CHECKOUT_SESSION_ID}/pay',
+        success_url='https://ja2023api.algorix.io/tuition_bill/'+ str(tuition_bill_id) +'/pay?session={CHECKOUT_SESSION_ID}/pay',
         cancel_url='https://ja2023api.algorix.io/tuition_bill/cancel',
     )
 
