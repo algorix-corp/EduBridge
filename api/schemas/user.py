@@ -7,6 +7,6 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True)
     password: str
     phone: str
-    role: str  # admin, bd_manager, acd_manager
+    role: str  # admin, building, academy
     image_url: Optional[str] = None
     created_at: Optional[datetime] = Field(default=None, sa_column_kwargs={"default": "now()"})

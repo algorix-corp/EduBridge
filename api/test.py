@@ -3,69 +3,67 @@ from fastapi.testclient import TestClient
 from api.main import app
 
 client = TestClient(app)
+admin_token = ""
+building_token = ""
+academy_token = ""
 
 
 def test_root():
     response = client.get("/")
     assert response.status_code == 200
-    # assert response.json() == {"message": "Hello World"}
 
 
-# def test_read_item():
-#     response = client.get("/items/foo", headers={"X-Token": "coneofsilence"})
+def test_login():
+    response = client.post("/login", json={"email": "ryankwon@algorix.io", "password": "1234"})
+    global admin_token
+    admin_token = response.json()["Bearer"]
+    assert response.status_code == 200
+
+
+def test_auth():
+    response = client.post("/auth", headers={"Authorization": f"Bearer {admin_token}"})
+    assert response.status_code == 200
+
+
+# def test_building_register():
+#     response = client.post("/user", json={
+#         "name": "Demo Building Manager",
+#         "email": "demo_bdm@algorix.io",
+#         "password": "1234",
+#         "phone": "821012345678",
+#         "role": "building",
+#     })
 #     assert response.status_code == 200
-#     assert response.json() == {
-#         "id": "foo",
-#         "title": "Foo",
-#         "description": "There goes my hero",
-#     }
-#
-#
-# def test_read_item_bad_token():
-#     response = client.get("/items/foo", headers={"X-Token": "hailhydra"})
-#     assert response.status_code == 400
-#     assert response.json() == {"detail": "Invalid X-Token header"}
-#
-#
-# def test_read_inexistent_item():
-#     response = client.get("/items/baz", headers={"X-Token": "coneofsilence"})
-#     assert response.status_code == 404
-#     assert response.json() == {"detail": "Item not found"}
-#
-#
-# def test_create_item():
-#     response = client.post(
-#         "/items/",
-#         headers={"X-Token": "coneofsilence"},
-#         json={"id": "foobar", "title": "Foo Bar", "description": "The Foo Barters"},
-#     )
-#     assert response.status_code == 200
-#     assert response.json() == {
-#         "id": "foobar",
-#         "title": "Foo Bar",
-#         "description": "The Foo Barters",
-#     }
-#
-#
-# def test_create_item_bad_token():
-#     response = client.post(
-#         "/items/",
-#         headers={"X-Token": "hailhydra"},
-#         json={"id": "bazz", "title": "Bazz", "description": "Drop the bazz"},
-#     )
-#     assert response.status_code == 400
-#     assert response.json() == {"detail": "Invalid X-Token header"}
-#
-#
-# def test_create_existing_item():
-#     response = client.post(
-#         "/items/",
-#         headers={"X-Token": "coneofsilence"},
-#         json={
-#             "id": "foo",
-#             "title": "The Foo ID Stealers",
-#             "description": "There goes my stealer",
-#         },
-#     )
-#     assert response.status_code == 400
-#     assert response.json() == {"detail": "Item already exists"}
+
+
+def test_building_login():
+    response = client.post("/login", json={"email": "demo_bdm@algorix.io", "password": "1234"})
+    global building_token
+    building_token = response.json()["Bearer"]
+    assert response.status_code == 200
+
+
+def test_building_auth():
+    response = client.post("/auth", headers={"Authorization": f"Bearer {building_token}"})
+    assert response.status_code == 200
+
+
+def test_academy_register():
+    response = client.post("/user", json={
+        "name": "Demo Academy Manager",
+        "email": "demo_acd@algorix.io",
+        "password": "1234",
+        "phone": "821012345678",
+        "role": "building",
+    })
+    assert response.status_code == 200
+
+
+def test_academy_login():
+    response = client.post("/login", json={"email": "demo_acd@algorix.io", "password": "1234"})
+    global academy_token
+    academy_token = response.json()["Bearer"]
+    assert response.status_code == 200
+
+
+def test_academy_auth():
