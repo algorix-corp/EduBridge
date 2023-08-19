@@ -96,7 +96,6 @@ def pay_tuition_bill(tuition_bill_id: int):
             elif strp_session.status is "complete":
                 tuition_bill.is_paid = True
                 session.commit()
-                session.refresh(tuition_bill)
                 return {"message": "TuitionBill paid successfully"}
 
     stripe_session = stripe.checkout.Session.create(
