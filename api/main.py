@@ -57,3 +57,8 @@ def startup_event():
 def read_root():
     # redirect to /docs
     return RedirectResponse(url="/docs")
+
+
+@app.get("/coffee")
+def coffee():
+    return "I'm a teapot", 418
