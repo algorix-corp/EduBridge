@@ -1,5 +1,9 @@
 import styled, { css } from 'styled-components';
+
 import { ReactComponent as LogoSVG } from '../../assets/logo.svg';
+import { ReactComponent as AcademySVG } from '../../assets/academy.svg';
+import { ReactComponent as StarsSVG } from '../../assets/stars.svg';
+
 import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
 import { useEffect, useState } from 'react';
@@ -35,8 +39,8 @@ export function Section1() {
 
   return (
     <Container>
-      <Title $scroll={scroll} $startPoint={-500} $endPoint={2500}>
-        ❛ 대충 사람들의 궁금점을 의문문으로 여기다가 적으세요? ❜
+      <Title $scroll={scroll} $startPoint={-500} $endPoint={1500}>
+        ❛ 대충 사람들의 궁금점을 의문문으로 여기다가 적으세요? 🤔 ❜
       </Title>
       <Video
         className="video"
@@ -53,11 +57,12 @@ export function Section1() {
         $transform={transform}
       />
       <Title $scroll={scroll} $startPoint={2500} $endPoint={7000}>
-        <Logo /> is a All-in-One solution{'\n'}for small-sized academies.
+        <Logo /> is an <Span>All-in-One solution</Span>
+        {'\n'}for small-sized academies.
       </Title>
       <Title $scroll={scroll} $startPoint={7500} $endPoint={12000}>
-        Everything necessary for academy{'\n'}is in this platform, even for the
-        real estate.
+        Everything necessary for <Academy /> academy{'\n'}is in <Stars /> this
+        platform, even for the real estate.
       </Title>
     </Container>
   );
@@ -105,12 +110,17 @@ const Title = styled.p<{
         `}
 `;
 
+const Span = styled.span`
+  background-color: ${colors.blue};
+`;
+
 const Video = styled.video<{
   $scroll: number;
   $transform: number;
 }>`
   position: fixed;
 
+  width: 100vw;
   height: 100vh;
 
   ${({ $scroll, $transform }) =>
@@ -133,4 +143,22 @@ const Logo = styled(LogoSVG)`
 
   top: 4px;
   right: 5px;
+`;
+
+const Academy = styled(AcademySVG)`
+  position: relative;
+  top: 7px;
+  margin-left: 10px;
+
+  width: 40px;
+  height: 40px;
+`;
+
+const Stars = styled(StarsSVG)`
+  position: relative;
+  top: 7px;
+  margin-left: 10px;
+
+  width: 40px;
+  height: 40px;
 `;
