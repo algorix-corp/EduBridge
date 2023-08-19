@@ -1,6 +1,7 @@
-from api.routes._imports import *
-from fastapi import APIRouter, Depends, HTTPException, status
 from bcrypt import hashpw, gensalt
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from api.routes._imports import *
 from api.tools.upload_image_to_s3 import upload_image_to_s3
 
 router = APIRouter(
@@ -31,20 +32,10 @@ class Password(BaseModel):
 @router.post("/")
 def create_user(user: UserIn):
     with Session(engine) as session:
-        # if session.get(User, user.email):
-        #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
-        if Session(engine).query(User).filter(User.email == user.email).first():
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
+        user = User(**user.dict())
         user.password = hashpw(user.password.encode(), gensalt()).decode()
-        userdata = user.dict()
-        # upload_image_to_s3
-        if user.image_dataurl:
-            userdata["image_url"] = upload_image_to_s3(user.image_dataurl, user.email)
-        else:
-            userdata["image_url"] = None
-        session.add(User(**userdata))
+        session.add(user)
         session.commit()
-        session.refresh(user)
         return user
 
 
