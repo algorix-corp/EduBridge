@@ -11,6 +11,7 @@ import api.routes.reservation
 import api.routes.tuition_bill
 import api.routes.user
 import api.routes.join_lecture
+import api.routes.auth
 
 app = FastAPI()
 
@@ -34,3 +35,4 @@ app.include_router(api.routes.reservation.router)
 app.include_router(api.routes.tuition_bill.router)
 app.include_router(api.routes.user.router)
 app.include_router(api.routes.join_lecture.router)
+app.include_router(api.routes.auth.router)
