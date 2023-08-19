@@ -15,7 +15,7 @@ class UserCreate(BaseModel):
     email: str = Field(min_length=3)
     password: str = Field(min_length=4)
     phone: str = Field(min_length=10)
-    role: str = ["admin", "building", "academy"]
+    role: str = Field(min_length=3)
     image_dataurl: Optional[str] = None
 
 
