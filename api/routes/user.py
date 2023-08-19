@@ -11,7 +11,7 @@ router = APIRouter(
 
 class UserCreate(BaseModel):
     name: str = Field(min_length=3)
-    email: str = EmailStr
+    email: str = Field(min_length=3)
     password: str = Field(min_length=4)
     phone: str = Field(min_length=10)
     role: str = ["admin", "building", "academy"]
