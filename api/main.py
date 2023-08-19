@@ -48,10 +48,3 @@ def startup_event():
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-
-@app.get("/kill")
-def kill():
-    import os
-    os.kill(os.getpid(), 9)
-    return {"Hello": "World"}
