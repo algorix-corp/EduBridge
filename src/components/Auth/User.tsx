@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api.ts';
 import styled from 'styled-components';
-import { Group } from '@mantine/core';
+import { Group, LoadingOverlay } from '@mantine/core';
 import { Button } from '../../global/Button.tsx';
 import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
@@ -20,9 +20,26 @@ interface UserProps {
   image_url: string;
 }
 
+const ProfileInit: UserProps = {
+  created_at: '',
+  email: '',
+  id: 0,
+  image_url: '',
+  password: '',
+  role: '',
+  name: '',
+  phone: '',
+};
+
 export function User() {
   const navigate = useNavigate();
-  const [data, setData] = useState<UserProps | null>(null);
+  const [data, setData] = useState<UserProps>(ProfileInit);
+  const [editing, setEditing] = useState<boolean>(false);
+
+  const [name, setName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [disable, setDisable] = useState<boolean>(false);
+
   useEffect(() => {
     if (!localStorage.getItem('token')) {
       toast.error('You are not logged in.');
@@ -32,6 +49,8 @@ export function User() {
       .post('/auth')
       .then(r => {
         setData(r.data);
+        setName(r.data.name);
+        setPhone(r.data.phone);
       })
       .catch(() => {
         toast.error('An error occurred while fetching data.');
@@ -39,7 +58,45 @@ export function User() {
       });
   }, [navigate]);
 
-  const edit = () => {};
+  const edit = () => {
+    setDisable(true);
+    const randomstr = Math.random().toString(36).substring(7);
+    toast.loading('Please Wait..', { id: randomstr });
+    api
+      .put('/user', { name: name, phone: phone })
+      .then(() => {
+        if (data) {
+          setData({
+            created_at: data.created_at,
+            email: data.email,
+            id: data.id,
+            image_url: data.image_url,
+            password: data.password,
+            role: data.role,
+            name: name,
+            phone: phone,
+          });
+        } else {
+          toast.error(
+            'An error occurred while editing profile. However, editing has succeeded.\nPlease reload the page.',
+            {
+              id: randomstr,
+            },
+          );
+          setData(ProfileInit);
+        }
+        toast.success('Successfully edited profile.', { id: randomstr });
+      })
+      .catch(() => {
+        toast.error('An error occurred while editing profile.', {
+          id: randomstr,
+        });
+      })
+      .finally(() => {
+        setEditing(false);
+        setDisable(false);
+      });
+  };
   const delacc = () => {
     api
       .delete('/user')
@@ -61,59 +118,102 @@ export function User() {
     navigate('/');
   };
 
-  if (data) {
-    return (
-      <Container>
-        <Form
-          style={{
-            border: 'none',
-          }}
-        >
-          <InfoGroup>
-            <Title>Hello, {data.name} 👋</Title>
-            <Info>
-              <Block>Role</Block>
-              {data.role}
-            </Info>
-            <Info>
-              <Block>Phone</Block>
-              {data.phone}
-            </Info>
-            <Info>
-              <Block>Email</Block>
-              {data.email}
-            </Info>
-            <ButtonGroup>
-              <Button
-                backgroundColor={colors.black}
-                color={colors.black}
-                onClick={edit}
-                isBordered
-              >
-                Edit
-              </Button>
-              <Button
-                backgroundColor={colors.black}
-                color={colors.white}
-                onClick={signout}
-              >
-                Sign Out
-              </Button>
-              <Button
-                backgroundColor={colors.red}
-                color={colors.white}
-                onClick={delacc}
-              >
-                Delete
-              </Button>
-            </ButtonGroup>
-          </InfoGroup>
-        </Form>
-      </Container>
-    );
-  } else {
-    return <Container />;
-  }
+  return (
+    <Container>
+      <LoadingOverlay visible={data === ProfileInit} />
+      <Form
+        style={{
+          border: 'none',
+        }}
+      >
+        <InfoGroup>
+          <Title>
+            Hello,{' '}
+            {editing ? (
+              <ProfileEdit
+                key="name"
+                onChange={e => setName(e.target.value)}
+                defaultValue={data.name}
+                disabled={disable}
+              />
+            ) : (
+              data.name
+            )}{' '}
+            👋
+          </Title>
+          <Info>
+            <Block>Role</Block>
+            {data.role}
+          </Info>
+          <Info>
+            <Block>Phone</Block>
+            {editing ? (
+              <ProfileEdit
+                key="phone"
+                onChange={e => setPhone(e.target.value)}
+                defaultValue={data.phone}
+                disabled={disable}
+              />
+            ) : (
+              data.phone
+            )}
+          </Info>
+          <Info>
+            <Block>Email</Block>
+            {data.email}
+          </Info>
+          <ButtonGroup>
+            {editing ? (
+              <>
+                <Button
+                  backgroundColor={colors.black}
+                  color={colors.black}
+                  onClick={() => setEditing(false)}
+                  isBordered
+                  disabled={disable}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  backgroundColor={colors.blue}
+                  color={colors.white}
+                  onClick={() => edit()}
+                  disabled={disable}
+                >
+                  Save
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  backgroundColor={colors.black}
+                  color={colors.black}
+                  onClick={() => setEditing(true)}
+                  isBordered
+                >
+                  Edit
+                </Button>
+                <Button
+                  backgroundColor={colors.black}
+                  color={colors.white}
+                  onClick={signout}
+                >
+                  Sign Out
+                </Button>
+                <Button
+                  backgroundColor={colors.red}
+                  color={colors.white}
+                  onClick={delacc}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          </ButtonGroup>
+        </InfoGroup>
+      </Form>
+    </Container>
+  );
 }
 
 const Container = styled.div`
@@ -176,4 +276,22 @@ const ButtonGroup = styled(Group)`
   margin-top: 75px;
   left: 50%;
   transform: translateX(-50%);
+`;
+
+const ProfileEdit = styled.input`
+  width: 200px;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 2px solid ${colors.gray};
+  outline: none;
+  font-family: inherit;
+
+  &:focus {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 2px solid ${colors.black};
+    outline: none;
+  }
 `;
