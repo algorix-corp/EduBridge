@@ -42,7 +42,7 @@ export function User() {
 
   useEffect(() => {
     if (!localStorage.getItem('token')) {
-      toast.error('You are not logged in.');
+      toast.error('You are not signed in.');
       navigate('/auth/signin');
     }
     api
@@ -244,6 +244,7 @@ const Title = styled.p`
   font-weight: 700;
 
   margin-bottom: 25px;
+  margin-left: 20px;
 `;
 
 const Info = styled.div`
@@ -276,7 +277,7 @@ const ButtonGroup = styled(Group)`
   justify-content: center;
 
   position: relative;
-  margin-top: 75px;
+  margin-top: 60px;
   left: 50%;
   transform: translateX(-50%);
 `;

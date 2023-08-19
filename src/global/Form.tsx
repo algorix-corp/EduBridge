@@ -23,7 +23,7 @@ const Container = styled.div`
 `;
 
 const Box = styled.div`
-  padding: 30px;
+  padding: 30px 40px 30px 40px;
   width: 550px;
   margin: 0 auto;
 `;

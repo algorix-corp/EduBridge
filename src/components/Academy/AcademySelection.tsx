@@ -29,17 +29,19 @@ export function AcademySelection() {
             <Category>Student Management</Category>
           </SelectForm>
         </Link>
-        <SelectForm
-          style={{
-            float: 'right',
-            backgroundImage: `url('${reservationJPG}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          <Reservation />
-          <Category>Room Reservation</Category>
-        </SelectForm>
+        <Link to="/academy/reservation">
+          <SelectForm
+            style={{
+              float: 'right',
+              backgroundImage: `url('${reservationJPG}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <Reservation />
+            <Category>Room Reservation</Category>
+          </SelectForm>
+        </Link>
       </FormGroup>
     </Container>
   );
