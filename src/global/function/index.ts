@@ -15,3 +15,10 @@ export const checkExistence = (value: string) => {
   }
   return null;
 };
+
+export const biggerThan = (value: number, limit: number) => {
+  if (value < limit) {
+    return `This field must be bigger than ${limit}.`;
+  }
+  return null;
+};
