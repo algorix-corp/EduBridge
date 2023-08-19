@@ -81,7 +81,7 @@ def create_room(new_room: RoomCreate, current_user=Depends(get_current_user)):
 
 
 @router.get("/")
-def get_rooms(current_user=Depends(get_current_user)):
+def get_rooms_all(current_user=Depends(get_current_user)):
     if current_user.role == "admin":
         with Session(engine) as session:
             rooms = session.get(Room).all()
@@ -98,7 +98,7 @@ def get_rooms(current_user=Depends(get_current_user)):
 
 
 @router.get("/")
-def get_rooms(building_id: int, current_user=Depends(get_current_user)):
+def get_rooms_building(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         rooms = session.query(Room).filter(Room.building_id == building_id).all()
         return rooms
