@@ -11,24 +11,84 @@ const DashboardContainer = styled.div`
 
 export function AcademyStudentsDashboard() {
   const [studentStatuses] = useState([
-    { studentName: '일론머스크', subject: 'Math', paymentStatus: 'Paid', description: '도지도지' },
-    { studentName: '주커버그', subject: 'History', paymentStatus: 'Pending', description: '메-타' },
-    { studentName: '시진핑', subject: 'Science', paymentStatus: 'Paid', description: '핑핑이' },
-    { studentName: '일론머스크', subject: 'Math', paymentStatus: 'Paid', description: '도지도지' },
-    { studentName: '주커버그', subject: 'History', paymentStatus: 'Pending', description: '메-타' },
-    { studentName: '시진핑', subject: 'Science', paymentStatus: 'Paid', description: '핑핑이' },
-    { studentName: '일론머스크', subject: 'Math', paymentStatus: 'Paid', description: '도지도지' },
-    { studentName: '주커버그', subject: 'History', paymentStatus: 'Pending', description: '메-타' },
-    { studentName: '시진핑', subject: 'Science', paymentStatus: 'Paid', description: '핑핑이' },
-    { studentName: '일론머스크', subject: 'Math', paymentStatus: 'Paid', description: '도지도지' },
-    { studentName: '주커버그', subject: 'History', paymentStatus: 'Pending', description: '메-타' },
-    { studentName: '시진핑', subject: 'Science', paymentStatus: 'Paid', description: '핑핑이' },
+    {
+      studentName: '일론머스크',
+      subject: 'Math',
+      paymentStatus: 'Paid',
+      description: '도지도지',
+    },
+    {
+      studentName: '주커버그',
+      subject: 'History',
+      paymentStatus: 'Pending',
+      description: '메-타',
+    },
+    {
+      studentName: '시진핑',
+      subject: 'Science',
+      paymentStatus: 'Paid',
+      description: '핑핑이',
+    },
+    {
+      studentName: '일론머스크',
+      subject: 'Math',
+      paymentStatus: 'Paid',
+      description: '도지도지',
+    },
+    {
+      studentName: '주커버그',
+      subject: 'History',
+      paymentStatus: 'Pending',
+      description: '메-타',
+    },
+    {
+      studentName: '시진핑',
+      subject: 'Science',
+      paymentStatus: 'Paid',
+      description: '핑핑이',
+    },
+    {
+      studentName: '일론머스크',
+      subject: 'Math',
+      paymentStatus: 'Paid',
+      description: '도지도지',
+    },
+    {
+      studentName: '주커버그',
+      subject: 'History',
+      paymentStatus: 'Pending',
+      description: '메-타',
+    },
+    {
+      studentName: '시진핑',
+      subject: 'Science',
+      paymentStatus: 'Paid',
+      description: '핑핑이',
+    },
+    {
+      studentName: '일론머스크',
+      subject: 'Math',
+      paymentStatus: 'Paid',
+      description: '도지도지',
+    },
+    {
+      studentName: '주커버그',
+      subject: 'History',
+      paymentStatus: 'Pending',
+      description: '메-타',
+    },
+    {
+      studentName: '시진핑',
+      subject: 'Science',
+      paymentStatus: 'Paid',
+      description: '핑핑이',
+    },
     // ... (other initial student data)
   ]);
 
   const columns = ['Student Name', 'Subject', 'Payment Status', 'Description'];
 
-  const data = studentStatuses.map((status) => [
+  const data = studentStatuses.map(status => [
     status.studentName,
     status.subject,
     status.paymentStatus,
