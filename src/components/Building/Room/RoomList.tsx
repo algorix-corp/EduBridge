@@ -3,7 +3,7 @@ import { Button } from '../../../global/Button.tsx';
 import { useEffect, useState } from 'react';
 import api from '../../../api/api.ts';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface RoomProps {
   capacity: number;
@@ -23,7 +23,8 @@ function RoomLine({ room }: { room: RoomProps }) {
   return <div>{room.unit_name}</div>;
 }
 
-export function RoomList({ id }: { id: number }) {
+export function RoomList() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState<RoomProps[]>([]);
   useEffect(() => {

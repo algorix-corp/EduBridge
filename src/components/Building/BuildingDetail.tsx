@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../api/api.ts';
 import toast from 'react-hot-toast';
@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import { Button } from '../../global/Button.tsx';
 import { colors } from '../../colors';
 import { modals } from '@mantine/modals';
-import { RoomList } from './Room/RoomList.tsx';
 
 interface BuildingProps {
   description: string;
@@ -113,84 +112,86 @@ export function BuildingDetail() {
       });
   };
   return (
-    <BuildingDetailPage>
-      <LoadingOverlay visible={data === BuildingInit} />
-      <div>
-        <h1>
+    <BuildingDetailContainer>
+      <BuildingDetailPage>
+        <LoadingOverlay visible={data === BuildingInit} />
+        <div>
+          <h1>
+            {editing ? (
+              <TitleInput
+                id="name"
+                defaultValue={data.name}
+                onChange={e => setName(e.target.value)}
+              />
+            ) : (
+              data.name
+            )}
+          </h1>
+          <h3>
+            {editing ? (
+              <DescriptionInput
+                id="description"
+                defaultValue={data.description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            ) : (
+              data.description
+            )}
+          </h3>
+          <h3>
+            {editing ? (
+              <DescriptionInput
+                id="address"
+                defaultValue={data.address}
+                onChange={e => setAddress(e.target.value)}
+              />
+            ) : (
+              data.address
+            )}
+          </h3>
+        </div>
+        <div>
           {editing ? (
-            <TitleInput
-              id="name"
-              defaultValue={data.name}
-              onChange={e => setName(e.target.value)}
-            />
+            <Button
+              onClick={() =>
+                modals.openConfirmModal({
+                  title: 'Change Image',
+                  labels: { confirm: 'Confirm', cancel: 'Cancel' },
+                  children: (
+                    <>
+                      <FileButton
+                        onChange={value => {
+                          if (!value) return;
+                          change_image(value);
+                        }}
+                        accept="image/png,image/jpeg"
+                      >
+                        {props => (
+                          <Button {...props}>Pick Building Picture</Button>
+                        )}
+                      </FileButton>
+                    </>
+                  ),
+                })
+              }
+            >
+              Change Image
+            </Button>
           ) : (
-            data.name
+            <Image src={data.image_url} height={300} alt={`building-${id}`} />
           )}
-        </h1>
-        <h3>
           {editing ? (
-            <DescriptionInput
-              id="description"
-              defaultValue={data.description}
-              onChange={e => setDescription(e.target.value)}
-            />
+            <>
+              <Button onClick={() => setEditing(false)}>Cancel</Button>
+              <Button onClick={() => update_building()}>Save</Button>
+            </>
           ) : (
-            data.description
+            <Button onClick={() => setEditing(true)}>Edit</Button>
           )}
-        </h3>
-        <h3>
-          {editing ? (
-            <DescriptionInput
-              id="address"
-              defaultValue={data.address}
-              onChange={e => setAddress(e.target.value)}
-            />
-          ) : (
-            data.address
-          )}
-        </h3>
-      </div>
-      <div>
-        {editing ? (
-          <Button
-            onClick={() =>
-              modals.openConfirmModal({
-                title: 'Change Image',
-                labels: { confirm: 'Confirm', cancel: 'Cancel' },
-                children: (
-                  <>
-                    <FileButton
-                      onChange={value => {
-                        if (!value) return;
-                        change_image(value);
-                      }}
-                      accept="image/png,image/jpeg"
-                    >
-                      {props => (
-                        <Button {...props}>Pick Building Picture</Button>
-                      )}
-                    </FileButton>
-                  </>
-                ),
-              })
-            }
-          >
-            Change Image
-          </Button>
-        ) : (
-          <Image src={data.image_url} height={300} alt={`building-${id}`} />
-        )}
-        {editing ? (
-          <>
-            <Button onClick={() => setEditing(false)}>Cancel</Button>
-            <Button onClick={() => update_building()}>Save</Button>
-          </>
-        ) : (
-          <Button onClick={() => setEditing(true)}>Edit</Button>
-        )}
-        <RoomList id={Number(id)} />
-      </div>
-    </BuildingDetailPage>
+        </div>
+      </BuildingDetailPage>
+      <Outlet />
+    </BuildingDetailContainer>
   );
 }
 
@@ -236,4 +237,10 @@ const DescriptionInput = styled.input`
     border-bottom: 2px solid ${colors.blue};
     outline: none;
   }
+`;
+
+const BuildingDetailContainer = styled.div`
+  padding: 200px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
 `;
