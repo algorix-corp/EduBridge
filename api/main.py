@@ -19,7 +19,10 @@ import api.tools.env
 app = FastAPI()
 
 origins = [
-    "*"
+    "http://localhost:3000",
+    "http://localhost",
+    "http://ja2023api.algorix.io",
+    "https://ja2023api.algorix.io",
 ]
 
 app.add_middleware(
