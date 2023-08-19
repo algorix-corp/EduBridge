@@ -8,6 +8,9 @@ import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import api from '../api/api.ts';
+import toast from 'react-hot-toast';
+import { LoadingOverlay } from '@mantine/core';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -19,10 +22,38 @@ export function Header({ type }: HeaderProps) {
   const [scroll] = useRecoilState(scrollYState);
   const navigate = useNavigate();
   const location = useLocation();
-  const [loggedin, setloggedin] = useState(!!token);
+  const [loggedin, setloggedin] = useState<boolean | null>(null);
+  const [showbuilding, setshowbuilding] = useState<boolean>(true);
+  const [showacademy, setshowacademy] = useState<boolean>(true);
+  const [iswhite, setiswhite] = useState<boolean>(false);
   useEffect(() => {
-    setloggedin(!!token);
-  }, [token]);
+    if (type === 'white') setiswhite(true);
+    else setiswhite(false);
+  }, [type]);
+  useEffect(() => {
+    if (!token) {
+      setloggedin(false);
+      return;
+    }
+    api
+      .get('/user')
+      .then(r => {
+        if (r.data.role == 'admin') {
+          setshowacademy(true);
+          setshowbuilding(true);
+        } else if (r.data.role == 'building') {
+          setshowacademy(false);
+        } else if (r.data.role == 'academy') {
+          setshowbuilding(false);
+        }
+      })
+      .catch(() => {
+        toast.error('An error occurred while fetching data.');
+      })
+      .finally(() => {
+        setloggedin(true);
+      });
+  }, [token, loggedin]);
 
   const signInLink = loggedin ? '/building' : '/auth/signin';
   const signUpLink = loggedin ? '/academy' : '/auth/signup';
@@ -41,60 +72,39 @@ export function Header({ type }: HeaderProps) {
           navigate('/');
         }}
       />
-      {type === 'white' ? (
-        <ButtonGroup>
+      <ButtonGroup>
+        <LoadingOverlay visible={loggedin === null} />
+        {showbuilding ? (
           <Button
             onClick={() => navigate(signInLink)}
-            backgroundColor={colors.black}
-            color={colors.black}
+            backgroundColor={iswhite ? colors.black : colors.white}
+            color={iswhite ? colors.black : colors.white}
             isBordered
           >
             {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
+        ) : undefined}
+        {showacademy ? (
           <Button
             onClick={() => navigate(signUpLink)}
-            backgroundColor={colors.black}
-            color={colors.black}
+            backgroundColor={iswhite ? colors.black : colors.white}
+            color={iswhite ? colors.black : colors.white}
             isBordered
           >
             {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
-          {loggedin ? (
-            <Button
-              color={colors.white}
-              backgroundColor={colors.black}
-              onClick={() => navigate('/user')}
-              emoji
-            >
-              <UserSVG />
-            </Button>
-          ) : undefined}
-        </ButtonGroup>
-      ) : (
-        <ButtonGroup>
+        ) : undefined}
+        {loggedin ? (
           <Button
-            onClick={() => navigate(signInLink)}
-            backgroundColor={colors.white}
-            color={colors.white}
-            isBordered
+            color={iswhite ? colors.white : undefined}
+            backgroundColor={iswhite ? colors.black : undefined}
+            onClick={() => navigate('/user')}
+            emoji
           >
-            {loggedin ? 'Building Owner' : 'Sign In'}
+            <UserSVG />
           </Button>
-          <Button
-            onClick={() => navigate(signUpLink)}
-            backgroundColor={colors.white}
-            color={colors.white}
-            isBordered
-          >
-            {loggedin ? 'Academy Owner' : 'Sign Up'}
-          </Button>
-          {loggedin ? (
-            <Button onClick={() => navigate('/user')} emoji>
-              <UserSVG />
-            </Button>
-          ) : undefined}
-        </ButtonGroup>
-      )}
+        ) : undefined}
+      </ButtonGroup>
     </Container>
   );
 }
