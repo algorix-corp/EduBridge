@@ -7,12 +7,12 @@ router = APIRouter(
 )
 
 
-class SmsIn(BaseModel):
+class SmsCreate(BaseModel):
     phone_number: str
     message: str
 
 
 @router.post("/send_sms")
-def send_sms_func(sms: SmsIn, current_user=Depends(get_current_user)):
+def send_sms_func(sms: SmsCreate, current_user=Depends(get_current_user)):
     res = send_sms(sms.phone_number, sms.message)
     return {"message": res}
