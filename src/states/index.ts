@@ -9,8 +9,3 @@ export const loggedInState = atom({
   key: 'loggedInState',
   default: false,
 });
-
-export const token = atom({
-  key: 'token',
-  default: '',
-});
