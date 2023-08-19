@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from sqlmodel import SQLModel
@@ -33,7 +33,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"])
 
-app.title = "EduBridge API"
+app.title = "EduBridge"
 
 app.include_router(api.routes.student.router)
 app.include_router(api.routes.academy.router)
@@ -61,4 +61,4 @@ def read_root():
 
 @app.get("/coffee")
 def coffee():
-    return "I'm a teapot", 418
+    return HTTPException(status_code=418, detail="I'm a teapot")

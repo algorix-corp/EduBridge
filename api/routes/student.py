@@ -53,15 +53,23 @@ def create_student(new_student: StudentCreate, current_user=Depends(get_current_
             return student
     elif current_user.role == "academy":
 
-        if current_user.academy_id != new_student.academy_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You don't have permission to access this academy.",
-            )
+        # check if current user is the owner of the academy
+        with Session(engine) as session:
+            academy = session.get(Academy, current_user.academy_id)
+            if not academy:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Academy not found",
+                )
+            if academy.owner_id != current_user.id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this academy.",
+                )
 
         with Session(engine) as session:
             student = Student(
-                academy_id=current_user.academy_id,
+                academy_id=new_student.academy_id,
                 name=new_student.name,
                 school=new_student.school,
                 grade=new_student.grade,
@@ -92,7 +100,14 @@ def get_students(current_user=Depends(get_current_user)):
             return students
     elif current_user.role == "academy":
         with Session(engine) as session:
-            students = session.get(Student).filter(Student.academy_id == current_user.academy_id).all()
+            # check if current user is the owner of the academy
+            academy = session.query(Academy).filter(Academy.owner_id == current_user.id).first()
+            if not academy:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have permission to access this academy.",
+                )
+            students = session.query(Student).filter(Student.academy_id == academy.id).all()
             return students
     else:
         raise HTTPException(
@@ -113,7 +128,9 @@ def get_student(student_id: int, current_user=Depends(get_current_user)):
         if current_user.role == "admin":
             return student
         elif current_user.role == "academy":
-            if current_user.academy_id != student.academy_id:
+            # check if current user is the owner of the academy
+            academy = session.query(Academy).filter(Academy.owner_id == current_user.id).first()
+            if not academy:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="You don't have permission to access this academy.",
@@ -157,11 +174,14 @@ def update_student(student_id: int, student_update: StudentUpdate, current_user=
             session.refresh(student)
             return student
         elif current_user.role == "academy":
-            if current_user.academy_id != student.academy_id:
+            # check if current user is the owner of the academy
+            academy = session.query(Academy).filter(Academy.owner_id == current_user.id).first()
+            if not academy:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="You don't have permission to access this academy.",
                 )
+
             if student_update.name:
                 student.name = student_update.name
             if student_update.school:
@@ -203,11 +223,14 @@ def delete_student(student_id: int, current_user=Depends(get_current_user)):
             session.commit()
             return {"message": "Student deleted"}
         elif current_user.role == "academy":
-            if current_user.academy_id != student.academy_id:
+            # check if current user is the owner of the academy
+            academy = session.query(Academy).filter(Academy.owner_id == current_user.id).first()
+            if not academy:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="You don't have permission to access this academy.",
                 )
+
             session.delete(student)
             session.commit()
             return {"message": "Student deleted"}

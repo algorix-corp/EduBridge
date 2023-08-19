@@ -77,8 +77,10 @@ def get_reservations(current_user: User = Depends(get_current_user)):
             return query
     elif current_user.role == "building":
         with Session(engine) as session:
+            # get buildings that user own
+            buildings = Building.select().where(Building.owner_id == current_user.id)
             # get rooms that belong to buildings that user own
-            rooms = Room.select().where(Room.building_id == current_user.building_id)
+            rooms = Room.select().where(Room.building_id.in_(buildings))
             # get reservations that belong to rooms that user own
             query = session.query(Reservation, Academy, Room).join(Academy).join(Room).filter(
                 Reservation.room_id.in_(rooms)).all()
