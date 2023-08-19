@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
-import { RowSelection } from "gridjs/plugins/selection";
+import { RowSelection } from 'gridjs/plugins/selection';
 
 export function AcademyStudentsDashboard() {
   const [studentStatuses] = useState([
@@ -13,17 +13,17 @@ export function AcademyStudentsDashboard() {
       description: '도지도지',
     },
     {
-        studentName: '일론머스크',
-        subject: 'Math',
-        paymentStatus: 'Paid',
-        description: '도지도지',
-      },
-      {
-        studentName: '일론머스크',
-        subject: 'Math',
-        paymentStatus: 'Paid',
-        description: '도지도지',
-      },
+      studentName: '민건',
+      subject: 'Dobi',
+      paymentStatus: 'Paid',
+      description: '미기미기',
+    },
+    {
+      studentName: '일론머스크',
+      subject: 'Math',
+      paymentStatus: 'Paid',
+      description: '도지도지',
+    },
   ]);
 
   const data = studentStatuses.map(status => [
@@ -35,14 +35,24 @@ export function AcademyStudentsDashboard() {
 
   return (
     <Container>
-        <Grid
+      <Grid
         data={data}
-        columns = {[{id: 'Checkbox', name:'Select', plugin: {component:RowSelection}}, "Student Name", "Subject", "Payment Status", "Desciption"]}
+        columns={[
+          {
+            id: 'Checkbox',
+            name: 'Select',
+            plugin: { component: RowSelection },
+          },
+          'Student Name',
+          'Subject',
+          'Payment Status',
+          'Desciption',
+        ]}
         search={true}
         sort={true}
         pagination={true}
         className="table"
-        />
+      />
     </Container>
   );
 }

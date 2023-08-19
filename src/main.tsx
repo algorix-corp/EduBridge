@@ -56,22 +56,36 @@ const router = createBrowserRouter([
     path: '/academy',
     element: (
       <>
-        <Header type="white" />
         <Outlet />
       </>
     ),
     children: [
       {
         path: '',
-        element: <AcademySelection />,
+        element: (
+          <>
+            <Header type="transparent" />
+            <AcademySelection />
+          </>
+        ),
       },
       {
         path: 'students',
-        element: <AcademyStudentsDashboard />,
+        element: (
+          <>
+            <Header type="white" />
+            <AcademyStudentsDashboard />
+          </>
+        ),
       },
       {
         path: 'reservation',
-        element: <AcademyRoomReservation />,
+        element: (
+          <>
+            <Header type="white" />
+            <AcademyRoomReservation />
+          </>
+        ),
       },
     ],
   },
