@@ -5,6 +5,7 @@ from sqlmodel import SQLModel
 import api.routes.academy
 import api.routes.auth
 import api.routes.building
+import api.routes.function
 import api.routes.join_lecture
 import api.routes.lecture
 import api.routes.reservation
@@ -38,6 +39,7 @@ app.include_router(api.routes.tuition_bill.router)
 app.include_router(api.routes.user.router)
 app.include_router(api.routes.join_lecture.router)
 app.include_router(api.routes.auth.router)
+app.include_router(api.routes.function.router)
 
 
 @app.on_event("startup")
