@@ -30,7 +30,7 @@ body {
 }
 
 .gridjs-search-input {
-  border: 2px solid #e9e9f2 !important;
+  border: 2px solid #b8b8cc !important;
   border-radius: 7px !important;
 
   width: 100% !important;
@@ -42,7 +42,7 @@ body {
 }
 
 .gridjs-search-input:focus {
-  border-color: #e9e9f2 !important;
+  border-color: #b8b8cc !important;
 }
 
 .gridjs-search-input::placeholder {

@@ -17,6 +17,7 @@ import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 import { AcademyStudentsDashboard } from './components/Academy/AcademyStudentsDashboard.tsx';
 import { User } from './components/Auth/User.tsx';
 import { AcademyRoomReservation } from './components/Reservation/AcademyRoomReservation.tsx';
+import { ModalsProvider } from '@mantine/modals';
 
 const router = createBrowserRouter([
   {
@@ -56,22 +57,36 @@ const router = createBrowserRouter([
     path: '/academy',
     element: (
       <>
-        <Header type="white" />
         <Outlet />
       </>
     ),
     children: [
       {
         path: '',
-        element: <AcademySelection />,
+        element: (
+          <>
+            <Header type="transparent" />
+            <AcademySelection />
+          </>
+        ),
       },
       {
         path: 'students',
-        element: <AcademyStudentsDashboard />,
+        element: (
+          <>
+            <Header type="white" />
+            <AcademyStudentsDashboard />
+          </>
+        ),
       },
       {
         path: 'reservation',
-        element: <AcademyRoomReservation />,
+        element: (
+          <>
+            <Header type="white" />
+            <AcademyRoomReservation />
+          </>
+        ),
       },
     ],
   },
@@ -110,11 +125,13 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <MantineProvider withGlobalStyles withNormalizeCSS>
-    <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-      <RecoilRoot>
-        <Toaster position="top-center" reverseOrder={false} />
-        <RouterProvider router={router} />
-      </RecoilRoot>
-    </DatesProvider>
+    <ModalsProvider>
+      <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+        <RecoilRoot>
+          <Toaster position="top-center" reverseOrder={false} />
+          <RouterProvider router={router} />
+        </RecoilRoot>
+      </DatesProvider>
+    </ModalsProvider>
   </MantineProvider>,
 );

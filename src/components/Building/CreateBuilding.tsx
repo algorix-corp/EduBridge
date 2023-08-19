@@ -40,29 +40,30 @@ export function CreateBuilding() {
     // image to dataurl
     const reader = new FileReader();
     reader.readAsDataURL(values.image);
-    let imageDataUrl = '';
     reader.onloadend = () => {
-      imageDataUrl = reader.result as string;
-    };
-    const body = {
-      name: values.name,
-      address: values.address,
-      description: values.description,
-      image_url: imageDataUrl,
-    };
-    api
-      .post('/building', body)
-      .then(() => {
-        toast.success('Successfully created new building!', { id: randomstr });
-        navigate('/building');
-      })
-      .catch(() => {
-        toast.error('An error occurred while creating new building.', {
-          id: randomstr,
+      const imageDataUrl = reader.result as string;
+      const body = {
+        name: values.name,
+        address: values.address,
+        description: values.description,
+        image_url: imageDataUrl,
+      };
+      api
+        .post('/building', body)
+        .then(() => {
+          toast.success('Successfully created new building!', {
+            id: randomstr,
+          });
+          navigate('/building');
+        })
+        .catch(() => {
+          toast.error('An error occurred while creating new building.', {
+            id: randomstr,
+          });
+          form.reset();
+          setDisabled(false);
         });
-        form.reset();
-        setDisabled(false);
-      });
+    };
   };
 
   return (
