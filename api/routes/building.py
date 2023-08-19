@@ -1,4 +1,5 @@
 from api.routes._imports import *
+from api.tools.upload_image_to_s3 import upload_image_to_s3
 
 router = APIRouter(
     prefix="/building",
@@ -17,7 +18,7 @@ class BuildingUpdate(BaseModel):
     name: Optional[str] = Field(min_length=3)
     address: Optional[str] = Field(min_length=3)
     description: Optional[str] = None
-    image_url: Optional[str] = None
+    image_dataurl: Optional[str] = None
 
 
 @router.post("/")
@@ -66,10 +67,21 @@ def update_building(building_id: int, new_building: BuildingUpdate, current_user
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
         if building.owner_id != current_user.id and current_user.role != "admin":
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        updated_building = Building(**new_building.dict())
-        session.merge(updated_building)
+
+        # if there is data in new_building, update it
+        if new_building.name:
+            building.name = new_building.name
+        if new_building.address:
+            building.address = new_building.address
+        if new_building.description:
+            building.description = new_building.description
+        if new_building.image_dataurl:
+            building.image_url = upload_image_to_s3(new_building.image_dataurl, building.name)
+
         session.commit()
-        return {"message": "Building updated successfully", "building": updated_building}
+        session.refresh(building)
+
+        return {"message": "Building updated successfully", "building": building}
 
 
 @router.delete("/{building_id}")
