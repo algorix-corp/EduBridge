@@ -1,5 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-
 from api.routes._imports import *
 
 router = APIRouter(
@@ -9,7 +7,7 @@ router = APIRouter(
 
 
 @router.get("/academy/{academy_id}/lecture/{lecture_id}/student")
-def get_students(academy_id: int, lecture_id: int, current_user: dict = Depends(get_current_user)):
+def get_students(academy_id: int, lecture_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -18,7 +16,7 @@ def get_students(academy_id: int, lecture_id: int, current_user: dict = Depends(
 
 
 @router.post("/academy/{academy_id}/lecture/{lecture_id}/student")
-def add_student(academy_id: int, lecture_id: int, student_id: int, current_user: dict = Depends(get_current_user)):
+def add_student(academy_id: int, lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -33,7 +31,7 @@ def add_student(academy_id: int, lecture_id: int, student_id: int, current_user:
 
 
 @router.delete("/academy/{academy_id}/lecture/{lecture_id}/student/{student_id}")
-def delete_student(academy_id: int, lecture_id: int, student_id: int, current_user: dict = Depends(get_current_user)):
+def delete_student(academy_id: int, lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:

@@ -1,5 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-
 from api.routes._imports import *
 
 router = APIRouter(
@@ -16,7 +14,7 @@ class ReservationIn(BaseModel):
 
 
 @router.get("/building/{building_id}/reservation")
-def get_building_reservations(building_id: int, current_user: dict = Depends(get_current_user)):
+def get_building_reservations(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
@@ -27,7 +25,7 @@ def get_building_reservations(building_id: int, current_user: dict = Depends(get
 
 @router.post("/building/{building_id}/reservation")
 def create_building_reservation(building_id: int, reservation: ReservationIn,
-                                current_user: dict = Depends(get_current_user)):
+                                current_user=Depends(get_current_user)):
     if reservation.start_date > reservation.end_date:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
 
@@ -50,7 +48,7 @@ def create_building_reservation(building_id: int, reservation: ReservationIn,
 
 
 @router.get("/building/{building_id}/room/{room_id}/reservation")
-def get_room_reservations(building_id: int, room_id: int, current_user: dict = Depends(get_current_user)):
+def get_room_reservations(building_id: int, room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
@@ -64,7 +62,7 @@ def get_room_reservations(building_id: int, room_id: int, current_user: dict = D
 
 @router.post("/building/{building_id}/room/{room_id}/reservation")
 def create_room_reservation(building_id: int, room_id: int, reservation: ReservationIn,
-                            current_user: dict = Depends(get_current_user)):
+                            current_user=Depends(get_current_user)):
     if reservation.start_date > reservation.end_date:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
 
@@ -91,7 +89,7 @@ def create_room_reservation(building_id: int, room_id: int, reservation: Reserva
 
 @router.get("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
 def get_reservation(building_id: int, room_id: int, reservation_id: int,
-                    current_user: dict = Depends(get_current_user)):
+                    current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
@@ -107,7 +105,7 @@ def get_reservation(building_id: int, room_id: int, reservation_id: int,
 
 @router.put("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
 def update_reservation(building_id: int, room_id: int, reservation_id: int, reservation: ReservationIn,
-                       current_user: dict = Depends(get_current_user)):
+                       current_user=Depends(get_current_user)):
     if reservation.start_date > reservation.end_date:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid date range")
 
@@ -132,7 +130,7 @@ def update_reservation(building_id: int, room_id: int, reservation_id: int, rese
 
 @router.delete("/building/{building_id}/room/{room_id}/reservation/{reservation_id}")
 def delete_reservation(building_id: int, room_id: int, reservation_id: int,
-                       current_user: dict = Depends(get_current_user)):
+                       current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:

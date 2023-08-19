@@ -1,5 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-
 from api.routes._imports import *
 
 router = APIRouter(
@@ -25,7 +23,7 @@ class LectureUpdate(BaseModel):
 
 
 @router.post("/academy/{academy_id}/lecture")
-def create_lecture(academy_id: int, lecture: LectureIn, current_user: dict = Depends(get_current_user)):
+def create_lecture(academy_id: int, lecture: LectureIn, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -40,7 +38,7 @@ def create_lecture(academy_id: int, lecture: LectureIn, current_user: dict = Dep
 
 
 @router.get("/academy/{academy_id}/lecture")
-def get_lectures(academy_id: int, current_user: dict = Depends(get_current_user)):
+def get_lectures(academy_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -49,7 +47,7 @@ def get_lectures(academy_id: int, current_user: dict = Depends(get_current_user)
 
 
 @router.get("/academy/{academy_id}/lecture/{lecture_id}")
-def get_lecture(academy_id: int, lecture_id: int, current_user: dict = Depends(get_current_user)):
+def get_lecture(academy_id: int, lecture_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -61,7 +59,7 @@ def get_lecture(academy_id: int, lecture_id: int, current_user: dict = Depends(g
 
 @router.put("/academy/{academy_id}/lecture/{lecture_id}")
 def update_lecture(academy_id: int, lecture_id: int, lecture: LectureUpdate,
-                   current_user: dict = Depends(get_current_user)):
+                   current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -75,7 +73,7 @@ def update_lecture(academy_id: int, lecture_id: int, lecture: LectureUpdate,
 
 
 @router.delete("/academy/{academy_id}/lecture/{lecture_id}")
-def delete_lecture(academy_id: int, lecture_id: int, current_user: dict = Depends(get_current_user)):
+def delete_lecture(academy_id: int, lecture_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
