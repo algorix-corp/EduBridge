@@ -3,25 +3,31 @@ import styled, { css } from 'styled-components';
 import { colors } from '../colors';
 
 interface ButtonProps {
+  type?: 'button' | 'submit' | 'reset';
   children?: ReactNode;
   onClick?: () => void;
   backgroundColor?: string;
   color?: string;
   isBordered?: boolean;
+  disabled?: boolean;
 }
 
 export function Button({
+  type = undefined,
   children,
   onClick,
   backgroundColor = colors.white,
   color = colors.blue,
   isBordered = false,
+  disabled,
 }: ButtonProps) {
   return (
     <Container
+      type={type}
       $backgroundColor={backgroundColor}
       $isBordered={isBordered}
       onClick={() => onClick?.()}
+      disabled={disabled}
     >
       <Text $color={color}>{children}</Text>
     </Container>

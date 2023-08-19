@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useForm } from '@mantine/form';
-import { Button, Group, PasswordInput, TextInput } from '@mantine/core';
+import { Group, PasswordInput, TextInput } from '@mantine/core';
+import { Button } from '../../global/Button';
 import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -37,8 +38,12 @@ export function SignIn() {
     const randomstr = Math.random().toString(36).substring(7);
     toast.loading('Logging in...', { id: randomstr });
     setDisabled(true);
+    const body = {
+      email: values.email,
+      password: values.password,
+    };
     api
-      .post('/auth/login', values)
+      .post('/auth/login', body)
       .then(r => {
         localStorage.setItem('token', r.data.token);
         toast.success('Successfully logged in!', { id: randomstr });
@@ -77,13 +82,6 @@ export function SignIn() {
     </SignInBox>
   );
 }
-
-const SignInArea = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-`;
 
 const SignInBox = styled.div`
   padding: 30px;
