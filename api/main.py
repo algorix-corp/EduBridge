@@ -32,6 +32,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"])
 
+app.title = "EduBridge API"
+
 app.include_router(api.routes.student.router)
 app.include_router(api.routes.academy.router)
 app.include_router(api.routes.building.router)
