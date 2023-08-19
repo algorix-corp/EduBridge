@@ -17,6 +17,7 @@ import { AcademySelection } from './components/Academy/AcademySelection.tsx';
 import { AcademyStudentsDashboard } from './components/Academy/AcademyStudentsDashboard.tsx';
 import { User } from './components/Auth/User.tsx';
 import { AcademyRoomReservation } from './components/Reservation/AcademyRoomReservation.tsx';
+import { ModalsProvider } from '@mantine/modals';
 
 const router = createBrowserRouter([
   {
@@ -110,11 +111,13 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <MantineProvider withGlobalStyles withNormalizeCSS>
-    <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-      <RecoilRoot>
-        <Toaster position="top-center" reverseOrder={false} />
-        <RouterProvider router={router} />
-      </RecoilRoot>
-    </DatesProvider>
+    <ModalsProvider>
+      <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+        <RecoilRoot>
+          <Toaster position="top-center" reverseOrder={false} />
+          <RouterProvider router={router} />
+        </RecoilRoot>
+      </DatesProvider>
+    </ModalsProvider>
   </MantineProvider>,
 );
