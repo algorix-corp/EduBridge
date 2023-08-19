@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, FileInput, TextInput } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
-import api from '../api/api.ts';
+import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
 
 export function CreateBuilding() {

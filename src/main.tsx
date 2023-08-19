@@ -3,12 +3,13 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './index.css';
 import { MantineProvider } from '@mantine/core';
 import { Header } from './components/Header.tsx';
-import { BuildingHeader } from './components/BuildingHeader.tsx';
-import { CreateBuilding } from './components/CreateBuilding.tsx';
+import { CreateBuilding } from './components/Building/CreateBuilding.tsx';
 import { DatesProvider } from '@mantine/dates';
-import { BuildingMain } from './components/BuildingMain.tsx';
+import { BuildingMain } from './components/Building/BuildingMain.tsx';
 import { Landing } from './pages/Landing.tsx';
+import { NotFound } from './pages/NotFound.tsx';
 import { RecoilRoot } from 'recoil';
+import { BuildingDetail } from './components/Building/BuildingDetail.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
     path: '/building',
     element: (
       <>
-        <BuildingHeader />
+        <Header />
         <Outlet />
       </>
     ),
@@ -38,19 +39,25 @@ const router = createBrowserRouter([
         path: 'new',
         element: <CreateBuilding />,
       },
+      {
+        path: 'detail/:id',
+        element: <BuildingDetail />,
+      },
     ],
   },
-  // {
-  //   path: '/academy',
-  //   element: (
-  //     <>
-  //       <AcademyHeader />
-  //       <Outlet />
-  //     </>
-  //   ),
-  //   children: [
-
-  // },
+  {
+    path: '/academy',
+    element: (
+      <>
+        <Header />
+        <Outlet />
+      </>
+    ),
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -1,8 +1,8 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Alert, Button, Card, Group, Image, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
-import api from '../api/api.ts';
+import api from '../../api/api.ts';
 import styled from 'styled-components';
 
 interface Building {
@@ -12,6 +12,7 @@ interface Building {
 }
 
 export function BuildingMain() {
+  const navigate = useNavigate();
   const state = useLocation().state;
   const [newBuilding, setNewBuilding] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -76,6 +77,7 @@ export function BuildingMain() {
                   fullWidth
                   mt="md"
                   radius="md"
+                  onClick={() => navigate(`/building/detail/${index}`)}
                 >
                   View Building
                 </Button>
