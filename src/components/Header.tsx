@@ -28,32 +28,32 @@ export function Header({ type }: HeaderProps) {
       {type === 'white' ? (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/auth/signup')}
+            onClick={() => navigate('/auth/signin')}
             backgroundColor={colors.black}
             color={colors.black}
             isBordered
           >
-            Sign Up
+            Sign In
           </Button>
           <Button
-            onClick={() => navigate('/auth/signin')}
+            onClick={() => navigate('/auth/signup')}
             backgroundColor={colors.blue}
             color={colors.white}
           >
-            Sign In
+            Sign Up
           </Button>
         </ButtonGroup>
       ) : (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/auth/signup')}
+            onClick={() => navigate('/auth/signin')}
             backgroundColor={colors.white}
             color={colors.white}
             isBordered
           >
-            Sign Up
+            Sign In
           </Button>
-          <Button onClick={() => navigate('/auth/signin')}>Sign In</Button>
+          <Button onClick={() => navigate('/auth/signup')}>Sign Up</Button>
         </ButtonGroup>
       )}
     </Container>
