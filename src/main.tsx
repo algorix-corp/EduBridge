@@ -20,6 +20,7 @@ import { AcademyRoomReservation } from './components/Reservation/AcademyRoomRese
 import { ModalsProvider } from '@mantine/modals';
 import { CreateRoom } from './components/Building/Room/CreateRoom.tsx';
 import { RoomList } from './components/Building/Room/RoomList.tsx';
+import { RoomDetail } from './components/Building/Room/RoomDetail.tsx';
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
           {
             path: 'new',
             element: <CreateRoom />,
+          },
+          {
+            path: 'room/:room_id',
+            element: <RoomDetail />,
           },
         ],
       },

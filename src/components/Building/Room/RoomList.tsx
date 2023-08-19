@@ -3,7 +3,7 @@ import { Button } from '../../../global/Button.tsx';
 import { useEffect, useState } from 'react';
 import api from '../../../api/api.ts';
 import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 interface RoomProps {
   capacity: number;
@@ -20,7 +20,11 @@ interface RoomProps {
 }
 
 function RoomLine({ room }: { room: RoomProps }) {
-  return <div>{room.unit_name}</div>;
+  return (
+    <Link to={`/building/detail/${room.building_id}/room/${room.id}`}>
+      {room.unit_name}
+    </Link>
+  );
 }
 
 export function RoomList() {
@@ -44,7 +48,7 @@ export function RoomList() {
     <Container>
       <div>
         {data.map(rooms => (
-          <RoomLine room={rooms} />
+          <RoomLine key={rooms.id} room={rooms} />
         ))}
       </div>
       <div>
