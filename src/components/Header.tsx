@@ -5,7 +5,7 @@ import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -17,6 +17,8 @@ export function Header({ type }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const Logo = type === 'white' ? BlackLogo : WhiteLogo;
+
   return (
     <Container
       className="header"
@@ -24,7 +26,11 @@ export function Header({ type }: HeaderProps) {
       $type={type}
       $path={location.pathname}
     >
-      <Link to="/">{type === 'white' ? <BlackLogo /> : <WhiteLogo />}</Link>
+      <Logo
+        onClick={() => {
+          navigate('/');
+        }}
+      />
       {type === 'white' ? (
         <ButtonGroup>
           <Button
@@ -76,7 +82,7 @@ const Container = styled.div<{
   ${({ $type }) =>
     $type === 'white'
       ? css`
-          border-bottom: 1px solid ${colors.gray};
+          border-bottom: 2px solid ${colors.gray};
         `
       : undefined}
 
