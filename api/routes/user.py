@@ -1,6 +1,7 @@
 from bcrypt import hashpw, gensalt
 
 from api.routes._imports import *
+from api.tools.issue_auth_token import issue_auth_token
 from api.tools.upload_image_to_s3 import upload_image_to_s3
 
 router = APIRouter(
@@ -47,7 +48,8 @@ def create_user(new_user: UserCreate):
         session.add(user)
         session.commit()
         return {"message": "User successfully created",
-                "user": user}
+                "user": user,
+                "token": issue_auth_token(user.id)}
 
 
 @router.get("/")
