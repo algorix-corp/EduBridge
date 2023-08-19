@@ -44,6 +44,7 @@ def create_user(user: UserIn):
             userdata["image_url"] = None
         session.add(User(**userdata))
         session.commit()
+        session.refresh(user)
         return user
 
 
