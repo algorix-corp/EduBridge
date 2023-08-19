@@ -67,3 +67,5 @@ def test_academy_login():
 
 
 def test_academy_auth():
+    response = client.post("/auth", headers={"Authorization": f"Bearer {academy_token}"})
+    assert response.status_code == 200

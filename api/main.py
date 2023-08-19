@@ -1,20 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-import api.tools.env
-import api.tools.database
 from sqlmodel import SQLModel
 
-import api.routes.student
 import api.routes.academy
+import api.routes.auth
 import api.routes.building
-import api.routes.room
+import api.routes.join_lecture
 import api.routes.lecture
 import api.routes.reservation
+import api.routes.room
+import api.routes.student
 import api.routes.tuition_bill
 import api.routes.user
-import api.routes.join_lecture
-import api.routes.auth
+import api.tools.database
+import api.tools.env
 
 app = FastAPI()
 
@@ -48,4 +47,11 @@ def startup_event():
 
 @app.get("/")
 def read_root():
+    return {"Hello": "World"}
+
+
+@app.get("/kill")
+def kill():
+    import os
+    os.kill(os.getpid(), 9)
     return {"Hello": "World"}
