@@ -1,6 +1,5 @@
 {
-    "hooks": {
-      "pre-commit": "npm run format && npm run lint"
-    }
+  "hooks": {
+    "pre-commit": "npm run format && npm run lint"
   }
-  
+}
