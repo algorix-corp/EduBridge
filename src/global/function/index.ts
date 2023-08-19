@@ -6,4 +6,12 @@ export const checkEmail = (value: string) => {
   if (!emailRegex.test(value)) {
     return 'Please enter a valid email address.';
   }
+  return null;
 };
+
+export const checkExistence = (value: string) => {
+  if (!value) {
+    return 'This field is required.';
+  }
+  return null;
+}
