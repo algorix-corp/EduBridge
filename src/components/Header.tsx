@@ -31,6 +31,8 @@ export function Header({ type }: HeaderProps) {
   }, [type]);
   useEffect(() => {
     if (!token) {
+      setshowacademy(true);
+      setshowbuilding(true);
       setloggedin(false);
       return;
     }
