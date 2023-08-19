@@ -210,4 +210,3 @@ def get_bill(paid: Optional[bool], academy_id: dict = Depends(get_current_academ
         elif paid is None:
             return session.query(Bill).filter(academy_id).all()
 
-

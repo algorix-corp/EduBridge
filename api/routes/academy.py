@@ -107,3 +107,19 @@ def get_academy_student_bills(academy_id: int, current_user=Depends(get_current_
         # query TuitionBills
         tuition_bills = session.query(TuitionBill).filter(TuitionBill.lecture_id.in_(lecture_ids)).all()
         return tuition_bills
+
+
+@router.get("/{academy_id}/students")
+def get_academy_students(academy_id: int, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "academy":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    with Session(engine) as session:
+        academy = session.query(Academy).filter(Academy.id == academy_id).first()
+        if not academy:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
+
+        students = session.query(Student).filter(Student.academy_id == academy_id).all()
+
+        student_ids = [student.id for student in students]
+        return student_ids
