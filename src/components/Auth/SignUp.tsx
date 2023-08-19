@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
 import { Form } from '../../global/Form.tsx';
-import { checkEmail } from '../../global/function';
+import { checkEmail, checkExistence } from '../../global/function';
 import { TextInput } from '../../global/TextInput.tsx';
 import { PasswordInput } from '../../global/PasswordInput.tsx';
 import { SelectInput } from '../../global/SelectInput.tsx';
@@ -28,10 +28,10 @@ export function SignUp() {
 
     validate: {
       email: value => checkEmail(value),
-      password: value => !!value,
-      name: value => !!value,
-      phone: value => !!value,
-      role: value => !!value,
+      password: value => checkExistence(value),
+      name: value => checkExistence(value),
+      phone: value => checkExistence(value),
+      role: value => checkExistence(value),
     },
   });
 
