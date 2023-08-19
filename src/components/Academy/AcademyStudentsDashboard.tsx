@@ -47,7 +47,7 @@ export function AcademyStudentsDashboard() {
       const academyId = academy_data.map(item => item.id);
       console.log(academyId);
       api
-        .get(`/academy/${academyId}/students`)
+        .get(`/academy/${academyId[0]}/students`)
         .then(response => {
           console.log(response.data);
           grid_setData(response.data);

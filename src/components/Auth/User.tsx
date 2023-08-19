@@ -42,7 +42,7 @@ export function User() {
 
   useEffect(() => {
     if (!localStorage.getItem('token')) {
-      toast.error('You are not signed in.');
+      toast.error('You are not logged in.');
       navigate('/auth/signin');
     }
     api
@@ -244,7 +244,6 @@ const Title = styled.p`
   font-weight: 700;
 
   margin-bottom: 25px;
-  margin-left: 20px;
 `;
 
 const Info = styled.div`
@@ -262,7 +261,7 @@ const Block = styled.div`
   margin-right: 7px;
 
   background-color: ${colors.blue};
-  width: 50px;
+  width: 60px;
 
   padding: 2px 0 2px 0;
   font-size: 12px;
