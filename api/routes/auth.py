@@ -1,6 +1,7 @@
-from api.routes._imports import *
+from bcrypt import checkpw
 from fastapi import APIRouter, Depends, HTTPException, status
-from bcrypt import hashpw, gensalt, checkpw
+
+from api.routes._imports import *
 from api.tools.issue_auth_token import issue_auth_token
 
 router = APIRouter(

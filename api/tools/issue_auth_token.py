@@ -14,9 +14,10 @@ def issue_auth_token(user_id: int):
         if not user:
             return None
         payload = {
-            "user_id": user.id,
+            "id": user.id,
             "name": user.name,
             "email": user.email,
+            "phone": user.phone,
             "role": user.role,
             "image_url": user.image_url,
             "exp": datetime.utcnow() + timedelta(days=1),

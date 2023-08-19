@@ -85,5 +85,3 @@ def delete_lecture(academy_id: int, lecture_id: int, current_user: dict = Depend
         session.delete(lecture)
         session.commit()
         return {"message": "Lecture deleted successfully"}
-
-

@@ -122,5 +122,3 @@ def delete_student(academy_id: int, student_id: int, current_user: dict = Depend
         session.delete(student)
         session.commit()
         return {"message": "Student deleted successfully"}
-
-
