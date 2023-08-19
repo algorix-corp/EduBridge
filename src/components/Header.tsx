@@ -5,7 +5,7 @@ import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -24,36 +24,36 @@ export function Header({ type }: HeaderProps) {
       $type={type}
       $path={location.pathname}
     >
-      {type === 'white' ? <BlackLogo /> : <WhiteLogo />}
+      <Link to="/">{type === 'white' ? <BlackLogo /> : <WhiteLogo />}</Link>
       {type === 'white' ? (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/building')}
+            onClick={() => navigate('/auth/signup')}
             backgroundColor={colors.black}
             color={colors.black}
             isBordered
           >
-            Building Manager
+            Sign Up
           </Button>
           <Button
-            onClick={() => navigate('/academy')}
+            onClick={() => navigate('/auth/signin')}
             backgroundColor={colors.blue}
             color={colors.white}
           >
-            Academy
+            Sign In
           </Button>
         </ButtonGroup>
       ) : (
         <ButtonGroup>
           <Button
-            onClick={() => navigate('/building')}
+            onClick={() => navigate('/auth/signup')}
             backgroundColor={colors.white}
             color={colors.white}
             isBordered
           >
-            Building Manager
+            Sign Up
           </Button>
-          <Button onClick={() => navigate('/academy')}>Academy</Button>
+          <Button onClick={() => navigate('/auth/signin')}>Sign In</Button>
         </ButtonGroup>
       )}
     </Container>
