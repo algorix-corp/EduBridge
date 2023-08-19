@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileInput, Group, TextInput } from '@mantine/core';
+import { Group } from '@mantine/core';
 import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
@@ -8,6 +8,9 @@ import { colors } from '../../colors';
 import { Button } from '../../global/Button';
 import toast from 'react-hot-toast';
 import styled from 'styled-components';
+import { TextInput } from '../../global/TextInput.tsx';
+import { FileInput } from '../../global/FileInput.tsx';
+import { ReactComponent as ReturnSVG } from '../../assets/return.svg';
 
 export function CreateBuilding() {
   const [disabled, setDisabled] = useState<boolean>(false);
@@ -65,17 +68,17 @@ export function CreateBuilding() {
     <NewBuildingArea>
       <Form>
         <form onSubmit={form.onSubmit(values => new_building(values))}>
-          <TextInput
+          <Input
             label="Building Name"
             {...form.getInputProps('name')}
             withAsterisk
           />
-          <TextInput
+          <Input
             label="Building Address"
             {...form.getInputProps('address')}
             withAsterisk
           />
-          <TextInput
+          <Input
             label="Building Description"
             {...form.getInputProps('description')}
           />
@@ -86,12 +89,26 @@ export function CreateBuilding() {
             withAsterisk
             accept="image/png,image/jpeg"
           />
-          <Group position="right" mt={50}>
+          <Group mt={50}>
+            <Button
+              type="button"
+              disabled={disabled}
+              backgroundColor={colors.black}
+              color={colors.black}
+              isBordered
+              emoji
+              onClick={() => navigate('/building')}
+            >
+              <Return />
+            </Button>
             <Button
               type="submit"
               disabled={disabled}
               backgroundColor={colors.blue}
               color={colors.white}
+              style={{
+                marginLeft: 'auto',
+              }}
             >
               Add Building
             </Button>
@@ -106,4 +123,13 @@ const NewBuildingArea = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const Input = styled(TextInput)`
+  margin-bottom: 15px;
+`;
+
+const Return = styled(ReturnSVG)`
+  width: 26px;
+  height: 26px;
 `;

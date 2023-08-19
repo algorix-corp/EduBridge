@@ -55,7 +55,11 @@ export function SignIn() {
   };
   return (
     <Container>
-      <Form>
+      <Form
+        style={{
+          border: 'none',
+        }}
+      >
         <form onSubmit={form.onSubmit(values => login(values))}>
           <TextInput
             withAsterisk

@@ -1,8 +1,8 @@
-import { TextInput as Input } from '@mantine/core';
+import { FileInput as Input } from '@mantine/core';
 import styled from 'styled-components';
 import { colors } from '../colors';
 
-export function TextInput({ ...props }) {
+export function FileInput({ ...props }) {
   return <Container {...props} />;
 }
 
@@ -13,11 +13,10 @@ const Container = styled(Input)`
   }
 
   & div {
-    height: 40px;
     overflow: visible;
   }
 
-  & div input {
+  & div button {
     border: 2px solid ${colors.gray};
     border-radius: 7px;
 
@@ -31,7 +30,7 @@ const Container = styled(Input)`
     }
   }
 
-  & div input::placeholder {
+  & div button::placeholder {
     color: ${colors.vampgray};
   }
 `;
