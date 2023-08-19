@@ -1,123 +1,128 @@
 from api.routes._imports import *
 
 router = APIRouter(
-    prefix="",
+    prefix="/tuition_bill",
     tags=["student"],
 )
 
 
-class TuitionBillIn(BaseModel):
+class TuitionBillCreate(BaseModel):
     lecture_id: int
+    student_id: int
     yearmonth: str
     amount: int
     memo: Optional[str] = None
 
 
-@router.post("/academy/{academy_id}/student/{student_id}/tuition_bill")
-def create_tuition(academy_id: int, student_id: int, tuition: TuitionBillIn,
-                   current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
+class TuitionBillUpdate(BaseModel):
+    lecture_id: Optional[int]
+    student_id: Optional[int]
+    yearmonth: Optional[str]
+    amount: Optional[int]
+    memo: Optional[str] = None
+
+
+@router.post("/")
+def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            tuition_bill = TuitionBill(**tuition_bill.dict())
+            session.add(tuition_bill)
+            session.commit()
+            session.refresh(tuition_bill)
+            return tuition_bill
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            tuition_bill = TuitionBill(**tuition_bill.dict())
+            session.add(tuition_bill)
+            session.commit()
+            session.refresh(tuition_bill)
+            return tuition_bill
+    else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        tuition = TuitionBill(**tuition.dict())
-        session.add(tuition)
-        session.commit()
-        session.refresh(tuition)
-        return tuition
 
 
-@router.get("/academy/{academy_id}/student/{student_id}/tuition_bill")
-def get_tuition(academy_id: int, student_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
+@router.get("/")
+def get_tuition_bills(current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            tuition_bills = session.query(TuitionBill).all()
+            return tuition_bills
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            tuition_bills = session.query(TuitionBill).all()
+            return tuition_bills
+    elif current_user.role == "student":
+        with Session(engine) as session:
+            tuition_bills = session.query(TuitionBill).filter(TuitionBill.student_id == current_user.id).all()
+            return tuition_bills
+
+
+@router.get("/{tuition_bill_id}")
+def get_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            return tuition_bill
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            return tuition_bill
+    elif current_user.role == "student":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            return tuition_bill
+
+
+@router.put("/{tuition_bill_id}")
+def update_tuition_bill(tuition_bill_id: int, tuition_bill: TuitionBillUpdate, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).update(
+                tuition_bill.dict())
+            session.commit()
+            session.refresh(tuition_bill)
+            return tuition_bill
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).update(
+                tuition_bill.dict())
+            session.commit()
+            session.refresh(tuition_bill)
+            return tuition_bill
+    else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        tuition = session.query(TuitionBill).filter(TuitionBill.student_id == student_id).all()
-        return tuition
 
 
-@router.get("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
-def get_tuition(academy_id: int, student_id: int, tuition_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
+@router.delete("/{tuition_bill_id}")
+def delete_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user)):
+    if current_user.role == "admin":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            session.delete(tuition_bill)
+            session.commit()
+            return {"message": "TuitionBill deleted successfully"}
+    elif current_user.role == "academy":
+        with Session(engine) as session:
+            tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
+            if not tuition_bill:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+            session.delete(tuition_bill)
+            session.commit()
+            return {"message": "TuitionBill deleted successfully"}
+    else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        tuition = session.query(TuitionBill).filter(TuitionBill.id == tuition_id).first()
-        if not tuition:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tuition not found")
-        return tuition
-
-
-@router.put("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
-def update_tuition(academy_id: int, student_id: int, tuition_id: int, tuition: TuitionBillIn,
-                   current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        tuition = session.query(TuitionBill).filter(TuitionBill.id == tuition_id).first()
-        if not tuition:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tuition not found")
-        for var, value in tuition.dict().items():
-            if var == "id":
-                continue
-            if getattr(tuition, var) != getattr(tuition, var):
-                setattr(tuition, var, value)
-        session.commit()
-        session.refresh(tuition)
-        return tuition
-
-
-@router.delete("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
-def delete_tuition(academy_id: int, student_id: int, tuition_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        # check if academy belongs to current user
-        academy = session.query(Academy).filter(Academy.id == academy_id).first()
-        if not academy:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Academy not found")
-        if academy.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        tuition = session.query(TuitionBill).filter(TuitionBill.id == tuition_id).first()
-        if not tuition:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tuition not found")
-        session.delete(tuition)
-        session.commit()
-        return {"message": "Tuition deleted successfully"}

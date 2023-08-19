@@ -1,44 +1,121 @@
 from api.routes._imports import *
 
 router = APIRouter(
-    prefix="",
+    prefix="/lecture/{lecture_id}/student",
     tags=["lecture"],
 )
 
 
-@router.get("/academy/{academy_id}/lecture/{lecture_id}/student")
-def get_students(academy_id: int, lecture_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    with Session(engine) as session:
-        students = session.query(Student).join(JoinLecture).filter(JoinLecture.lecture_id == lecture_id).all()
-        return students
+class JoinLectureCreate(BaseModel):
+    student_id: int
 
 
-@router.post("/academy/{academy_id}/lecture/{lecture_id}/student")
-def add_student(academy_id: int, lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
+@router.post("/")
+def join_lecture(lecture_id: int, join_lecture: JoinLectureCreate, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "student":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
     with Session(engine) as session:
-        student = session.query(Student).filter(Student.id == student_id).first()
-        if not student:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        join_lecture = JoinLecture(student_id=student_id, lecture_id=lecture_id)
-        session.add(join_lecture)
+        lecture = session.query(Lecture).filter(Lecture.id == lecture_id).first()
+        if not lecture:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lecture not found")
+
+        if current_user.role == "admin":
+            student = session.query(User).filter(User.id == join_lecture.student_id).first()
+            if not student:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+            if student.role != "student":
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not student")
+        else:
+            student = current_user
+
+        if lecture.academy_id != student.academy_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="User is not in the same academy as lecture")
+
+        if lecture in student.lectures:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already in lecture")
+
+        student.lectures.append(lecture)
         session.commit()
-        session.refresh(join_lecture)
-        return join_lecture
+        session.refresh(student)
+        return student
 
 
-@router.delete("/academy/{academy_id}/lecture/{lecture_id}/student/{student_id}")
-def delete_student(academy_id: int, lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
-    if current_user.role != "academy" or current_user.role != "admin":
+@router.get("/")
+def get_students(lecture_id: int, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "student":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
     with Session(engine) as session:
-        join_lecture = session.query(JoinLecture).filter(JoinLecture.student_id == student_id,
-                                                         JoinLecture.lecture_id == lecture_id).first()
-        if not join_lecture:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-        session.delete(join_lecture)
+        lecture = session.query(Lecture).filter(Lecture.id == lecture_id).first()
+        if not lecture:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lecture not found")
+
+        if current_user.role == "admin":
+            students = session.query(User).filter(User.role == "student").all()
+            return students
+        else:
+            students = session.query(User).filter(User.role == "student").all()
+            return students
+
+
+@router.get("/{student_id}")
+def get_student(lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "student":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    with Session(engine) as session:
+        lecture = session.query(Lecture).filter(Lecture.id == lecture_id).first()
+        if not lecture:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lecture not found")
+
+        if current_user.role == "admin":
+            student = session.query(User).filter(User.id == student_id).first()
+            if not student:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+            if student.role != "student":
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not student")
+        else:
+            student = current_user
+
+        if lecture.academy_id != student.academy_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="User is not in the same academy as lecture")
+
+        if lecture not in student.lectures:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not in lecture")
+
+        return student
+
+
+@router.delete("/{student_id}")
+def delete_student(lecture_id: int, student_id: int, current_user=Depends(get_current_user)):
+    if current_user.role != "admin" and current_user.role != "student":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    with Session(engine) as session:
+        lecture = session.query(Lecture).filter(Lecture.id == lecture_id).first()
+        if not lecture:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lecture not found")
+
+        if current_user.role == "admin":
+            student = session.query(User).filter(User.id == student_id).first()
+            if not student:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+            if student.role != "student":
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not student")
+        else:
+            student = current_user
+
+        if lecture.academy_id != student.academy_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="User is not in the same academy as lecture")
+
+        if lecture not in student.lectures:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not in lecture")
+
+        student.lectures.remove(lecture)
         session.commit()
-        return {"message": "Student deleted successfully"}
+        session.refresh(student)
+        return student
