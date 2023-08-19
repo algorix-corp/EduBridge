@@ -16,7 +16,7 @@ def issue_auth_token(user_id: int):
         payload = {
             "user_id": user.id,
             "name": user.name,
-            "username": user.username,
+            "email": user.email,
             "role": user.role,
             "image_url": user.image_url,
             "exp": datetime.utcnow() + timedelta(days=1),
