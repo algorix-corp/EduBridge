@@ -17,7 +17,7 @@ class TuitionBillIn(BaseModel):
 
 @router.post("/academy/{academy_id}/student/{student_id}/tuition_bill")
 def create_tuition(academy_id: int, student_id: int, tuition: TuitionBillIn,
-                   current_user: dict = Depends(get_current_user)):
+                   current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -38,7 +38,7 @@ def create_tuition(academy_id: int, student_id: int, tuition: TuitionBillIn,
 
 
 @router.get("/academy/{academy_id}/student/{student_id}/tuition_bill")
-def get_tuition(academy_id: int, student_id: int, current_user: dict = Depends(get_current_user)):
+def get_tuition(academy_id: int, student_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -56,7 +56,7 @@ def get_tuition(academy_id: int, student_id: int, current_user: dict = Depends(g
 
 
 @router.get("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
-def get_tuition(academy_id: int, student_id: int, tuition_id: int, current_user: dict = Depends(get_current_user)):
+def get_tuition(academy_id: int, student_id: int, tuition_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -77,7 +77,7 @@ def get_tuition(academy_id: int, student_id: int, tuition_id: int, current_user:
 
 @router.put("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
 def update_tuition(academy_id: int, student_id: int, tuition_id: int, tuition: TuitionBillIn,
-                   current_user: dict = Depends(get_current_user)):
+                   current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -104,7 +104,7 @@ def update_tuition(academy_id: int, student_id: int, tuition_id: int, tuition: T
 
 
 @router.delete("/academy/{academy_id}/student/{student_id}/tuition_bill/{tuition_id}")
-def delete_tuition(academy_id: int, student_id: int, tuition_id: int, current_user: dict = Depends(get_current_user)):
+def delete_tuition(academy_id: int, student_id: int, tuition_id: int, current_user=Depends(get_current_user)):
     if current_user.role != "academy" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:

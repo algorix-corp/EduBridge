@@ -23,7 +23,7 @@ class BuildingUpdate(BaseModel):
 
 
 @router.post("/")
-def create_building(building: BuildingIn, current_user: dict = Depends(get_current_user)):
+def create_building(building: BuildingIn, current_user=Depends(get_current_user)):
     if current_user.role != "building" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -35,14 +35,14 @@ def create_building(building: BuildingIn, current_user: dict = Depends(get_curre
 
 
 @router.get("/")
-def get_buildings(current_user: dict = Depends(get_current_user)):
+def get_buildings(current_user=Depends(get_current_user)):
     with Session(engine) as session:
         buildings = session.query(Building).filter(Building.owner_id == current_user.id).all()
         return buildings
 
 
 @router.get("/{building_id}")
-def get_building(building_id: int, current_user: dict = Depends(get_current_user)):
+def get_building(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
@@ -51,7 +51,7 @@ def get_building(building_id: int, current_user: dict = Depends(get_current_user
 
 
 @router.put("/{building_id}")
-def update_building(building_id: int, building: BuildingUpdate, current_user: dict = Depends(get_current_user)):
+def update_building(building_id: int, building: BuildingUpdate, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:
@@ -68,7 +68,7 @@ def update_building(building_id: int, building: BuildingUpdate, current_user: di
 
 
 @router.delete("/{building_id}")
-def delete_building(building_id: int, current_user: dict = Depends(get_current_user)):
+def delete_building(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.query(Building).filter(Building.id == building_id).first()
         if not building:

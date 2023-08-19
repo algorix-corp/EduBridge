@@ -34,7 +34,7 @@ class RoomUpdate(BaseModel):
 
 
 @router.post("/building/{building_id}/room")
-def create_room(building_id: int, room: RoomIn, current_user: dict = Depends(get_current_user)):
+def create_room(building_id: int, room: RoomIn, current_user=Depends(get_current_user)):
     if current_user.role != "building" or current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     with Session(engine) as session:
@@ -49,14 +49,14 @@ def create_room(building_id: int, room: RoomIn, current_user: dict = Depends(get
 
 
 @router.get("/building/{building_id}/room")
-def get_rooms(building_id: int, current_user: dict = Depends(get_current_user)):
+def get_rooms(building_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         rooms = session.query(Room).filter(Room.building_id == building_id).all()
         return rooms
 
 
 @router.get("/building/{building_id}/room/{room_id}")
-def get_room(building_id: int, room_id: int, current_user: dict = Depends(get_current_user)):
+def get_room(building_id: int, room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -65,7 +65,7 @@ def get_room(building_id: int, room_id: int, current_user: dict = Depends(get_cu
 
 
 @router.put("/building/{building_id}/room/{room_id}")
-def update_room(building_id: int, room_id: int, room: RoomUpdate, current_user: dict = Depends(get_current_user)):
+def update_room(building_id: int, room_id: int, room: RoomUpdate, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -81,7 +81,7 @@ def update_room(building_id: int, room_id: int, room: RoomUpdate, current_user: 
 
 
 @router.delete("/building/{building_id}/room/{room_id}")
-def delete_room(building_id: int, room_id: int, current_user: dict = Depends(get_current_user)):
+def delete_room(building_id: int, room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -94,7 +94,7 @@ def delete_room(building_id: int, room_id: int, current_user: dict = Depends(get
 
 
 @router.get("/room/{room_id}/reservation")
-def get_room_reservations(room_id: int, current_user: dict = Depends(get_current_user)):
+def get_room_reservations(room_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -104,7 +104,7 @@ def get_room_reservations(room_id: int, current_user: dict = Depends(get_current
 
 
 @router.get("/room/{room_id}/reservation/{reservation_id}")
-def get_room_reservation(room_id: int, reservation_id: int, current_user: dict = Depends(get_current_user)):
+def get_room_reservation(room_id: int, reservation_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -116,7 +116,7 @@ def get_room_reservation(room_id: int, reservation_id: int, current_user: dict =
 
 
 @router.post("/room/{room_id}/reservation")
-def create_room_reservation(room_id: int, reservation: ReservationIn, current_user: dict = Depends(get_current_user)):
+def create_room_reservation(room_id: int, reservation: ReservationIn, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -130,7 +130,7 @@ def create_room_reservation(room_id: int, reservation: ReservationIn, current_us
 
 @router.put("/room/{room_id}/reservation/{reservation_id}")
 def update_room_reservation(room_id: int, reservation_id: int, reservation: ReservationIn,
-                            current_user: dict = Depends(get_current_user)):
+                            current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
@@ -147,7 +147,7 @@ def update_room_reservation(room_id: int, reservation_id: int, reservation: Rese
 
 
 @router.delete("/room/{room_id}/reservation/{reservation_id}")
-def delete_room_reservation(room_id: int, reservation_id: int, current_user: dict = Depends(get_current_user)):
+def delete_room_reservation(room_id: int, reservation_id: int, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         room = session.query(Room).filter(Room.id == room_id).first()
         if not room:
