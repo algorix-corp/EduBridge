@@ -53,7 +53,7 @@ export function AcademySelection() {
               fullWidth
               mt="md"
               radius="md"
-              onClick={() => navigate(`/academy/reservation`)}
+              onClick={() => navigate(`/reservation/academy`)}
             >
               Room Reservation
             </Button>

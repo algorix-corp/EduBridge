@@ -108,12 +108,13 @@ export function SignUp() {
             withAsterisk
             label="Role"
             placeholder="Choose your role"
-            defaultValue={'building-owner'}
+            defaultValue={'academy'}
             data={[
               { value: 'admin', label: 'Admin' },
               { value: 'building', label: 'Building Owner' },
               { value: 'academy', label: 'Academy' },
             ]}
+            {...form.getInputProps('role')}
           />
           <Group position="right" mt={50}>
             <Button
