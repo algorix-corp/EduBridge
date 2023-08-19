@@ -64,7 +64,7 @@ export function AcademySelection() {
 }
 
 const SelectionCard = styled.div`
-  width: 400px;
+  width: 380px;
   padding: 20px;
 `;
 
