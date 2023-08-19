@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, EmailStr
 
 from api.schemas.academy import Academy
 from api.schemas.building import Building
@@ -16,4 +16,4 @@ from api.tools.database import engine, Session
 from api.tools.get_current_user import get_current_user
 
 Academy(), Building(), JoinLecture(), Lecture(), Reservation(), Room(), Student(), TuitionBill(), User()
-BaseModel(), Optional, engine, Session, get_current_user, datetime, date
+BaseModel(), Field(), EmailStr(), Optional, engine, Session, get_current_user, datetime, date
