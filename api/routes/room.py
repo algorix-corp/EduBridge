@@ -1,5 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-
 from api.routes._imports import *
 from api.routes.reservation import ReservationIn
 

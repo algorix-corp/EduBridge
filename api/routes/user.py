@@ -1,5 +1,4 @@
 from bcrypt import hashpw, gensalt
-from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.routes._imports import *
 from api.tools.upload_image_to_s3 import upload_image_to_s3

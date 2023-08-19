@@ -1,5 +1,3 @@
-from fastapi import APIRouter, Depends
-
 from api.routes._imports import *
 from api.tools.send_sms import send_sms
 

@@ -1,5 +1,4 @@
 from bcrypt import checkpw
-from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.routes._imports import *
 from api.tools.issue_auth_token import issue_auth_token
