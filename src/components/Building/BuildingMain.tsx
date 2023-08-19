@@ -1,11 +1,13 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Alert, Button, Card, Group, Image, Text } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { Button, Card, Group, Image, Text } from '@mantine/core';
 import api from '../../api/api.ts';
 import styled from 'styled-components';
+import toast from 'react-hot-toast';
+import { IconPlus } from '@tabler/icons-react';
 
 interface Building {
+  id: number;
   name: string;
   address: string;
   image_url: string;
@@ -13,56 +15,34 @@ interface Building {
 
 export function BuildingMain() {
   const navigate = useNavigate();
-  const state = useLocation().state;
-  const [newBuilding, setNewBuilding] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
   const [data, setData] = useState<[Building] | null>(null);
-  useEffect(() => {
-    if (state && state.newBuilding) {
-      setNewBuilding(true);
-    }
-  }, [state]);
+
   useEffect(() => {
     api
       .get('/building')
       .then(r => {
         setData(r.data);
       })
-      .catch(() => setError(true));
+      .catch(() => toast.error('An error occurred while fetching data.'));
   }, []);
-  const closeSuccess = () => {
-    setNewBuilding(false);
-  };
   return (
     <div>
-      {newBuilding ? (
-        <Alert
-          icon={<IconAlertCircle size="1rem" />}
-          withCloseButton
-          onClick={closeSuccess}
-        >
-          Successfully Created Building!
-        </Alert>
-      ) : (
-        <div></div>
-      )}
-      {error ? (
-        <Alert icon={<IconAlertCircle size="1rem" />} color="red">
-          An error occurred while fetching buildings.
-        </Alert>
-      ) : (
-        <div></div>
-      )}
       <BuildingArea>
+        <div>
+          <Button onClick={() => navigate('/building/new')}>
+            <IconPlus size={20} />
+            New
+          </Button>
+        </div>
         {data ? (
-          data.map((building, index) => (
-            <BuildingCard key={index}>
+          data.map((building) => (
+            <BuildingCard key={building.id}>
               <Card shadow="sm" padding="lg" radius="md" withBorder>
                 <Card.Section>
                   <Image
                     src={building.image_url}
                     height={300}
-                    alt={`building-${index}`}
+                    alt={`building-${building.id}`}
                   />
                 </Card.Section>
                 <Group position="apart" mt="md" mb="xs">
@@ -77,7 +57,7 @@ export function BuildingMain() {
                   fullWidth
                   mt="md"
                   radius="md"
-                  onClick={() => navigate(`/building/detail/${index}`)}
+                  onClick={() => navigate(`/building/detail/${building.id}`)}
                 >
                   View Building
                 </Button>

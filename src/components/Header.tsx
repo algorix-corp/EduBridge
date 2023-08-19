@@ -4,18 +4,25 @@ import { ReactComponent as BlackLogoSVG } from '../assets/logo_black.svg';
 import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
-import { loggedInState, scrollYState } from '../states';
+import { scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { IconUser } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
 }
 
 export function Header({ type }: HeaderProps) {
+  const token = localStorage.getItem('token');
+
   const [scroll] = useRecoilState(scrollYState);
-  const [loggedin] = useRecoilState(loggedInState);
   const navigate = useNavigate();
   const location = useLocation();
+  const [loggedin, setloggedin] = useState(!!token);
+  useEffect(() => {
+    setloggedin(!!token)
+  }, [token]);
 
   const signInLink = loggedin ? '/building' : '/auth/signin';
   const signUpLink = loggedin ? '/academy' : '/auth/signup';
@@ -51,6 +58,15 @@ export function Header({ type }: HeaderProps) {
           >
             {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
+          {loggedin ? (
+            <Button
+              color={colors.white}
+              backgroundColor={colors.black}
+              onClick={() => navigate('/user')}
+            >
+              <IconUser size={20} />
+            </Button>
+          ) : undefined}
         </ButtonGroup>
       ) : (
         <ButtonGroup>
@@ -65,6 +81,11 @@ export function Header({ type }: HeaderProps) {
           <Button onClick={() => navigate(signUpLink)}>
             {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
+          {loggedin ? (
+            <Button onClick={() => navigate('/user')}>
+              <IconUser size={20} />
+            </Button>
+          ) : undefined}
         </ButtonGroup>
       )}
     </Container>

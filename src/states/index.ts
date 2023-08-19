@@ -4,8 +4,3 @@ export const scrollYState = atom({
   key: 'scrollYState',
   default: 0,
 });
-
-export const loggedInState = atom({
-  key: 'loggedInState',
-  default: false,
-});
