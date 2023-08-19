@@ -14,4 +14,4 @@ export const checkExistence = (value: string) => {
     return 'This field is required.';
   }
   return null;
-}
+};
