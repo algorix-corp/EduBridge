@@ -1,6 +1,9 @@
 import os
 
+import dotenv
 from sqlmodel import create_engine, Session
+
+dotenv.load_dotenv()
 
 db_host = os.getenv("POSTGRES_HOST")
 db_name = os.getenv("POSTGRES_DB")
