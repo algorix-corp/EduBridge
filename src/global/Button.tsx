@@ -28,7 +28,7 @@ export function Button({
   );
 }
 
-const Container = styled.div<{
+const Container = styled.button<{
   $backgroundColor: string;
   $isBordered: boolean;
 }>`
@@ -46,6 +46,9 @@ const Container = styled.div<{
   cursor: pointer;
   transition: scale 150ms ease-in-out;
 
+  outline: 0;
+  border: 0;
+
   ${({ $isBordered, $backgroundColor }) =>
     $isBordered
       ? css`
@@ -53,6 +56,7 @@ const Container = styled.div<{
           box-sizing: border-box;
           -moz-box-sizing: border-box;
           -webkit-box-sizing: border-box;
+          background-color: ${colors.white}00;
         `
       : css`
           background-color: ${$backgroundColor};
