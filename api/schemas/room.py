@@ -8,8 +8,8 @@ class Room(SQLModel, table=True):
     unit_name: str
     capacity: int
     image_url: Optional[str] = None
-    memo: Optional[str] = None
-    is_active: bool = True
-    price: int
+    description: Optional[str] = None
+    daily_price: int
     grid_x: int
     grid_y: int
+    is_active: bool = True
