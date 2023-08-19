@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, useRecoilState } from 'recoil';
 
 export const scrollYState = atom({
   key: 'scrollYState',
@@ -8,4 +8,9 @@ export const scrollYState = atom({
 export const loggedInState = atom({
   key: 'loggedInState',
   default: false,
+});
+
+export const token = atom({
+  key: 'token',
+  default: '',
 });
