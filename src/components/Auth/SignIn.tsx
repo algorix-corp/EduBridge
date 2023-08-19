@@ -46,7 +46,7 @@ export function SignIn() {
     api
       .post('/login', body)
       .then(r => {
-        localStorage.setItem('token', r.data.token);
+        localStorage.setItem('token', r.data.Bearer);
         toast.success('Successfully signed in!', { id: randomstr });
         setLoggedin(true);
         navigate('/');
