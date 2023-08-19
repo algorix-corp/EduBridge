@@ -91,12 +91,12 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
         if tuition_bill.stripe_session_id:
             strp_session = stripe.checkout.Session.retrieve(tuition_bill.stripe_session_id)
-            if strp_session.status is "open":
-                return RedirectResponse(strp_session.url, status_code=303)
-            elif strp_session.status is "complete":
+            if strp_session.status is "complete":
                 tuition_bill.is_paid = True
                 session.commit()
                 return {"message": "TuitionBill paid successfully"}
+            elif strp_session.status is "complete":
+                return RedirectResponse(strp_session.url, status_code=303)
 
     stripe_session = stripe.checkout.Session.create(
         line_items=[{
@@ -110,7 +110,7 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://ja2023api.algorix.io/tuition_bill/'+ str(tuition_bill_id) +'/pay?session={CHECKOUT_SESSION_ID}/pay',
+        success_url='https://ja2023api.algorix.io/tuition_bill/'+ str(tuition_bill_id) +'/pay?session_code={CHECKOUT_SESSION_ID}/pay',
         cancel_url='https://ja2023api.algorix.io/tuition_bill/cancel',
     )
 
