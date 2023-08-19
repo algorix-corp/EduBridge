@@ -1,12 +1,17 @@
+from datetime import date
 from typing import Optional
 
 import bcrypt
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.schemas.academy import Academy
+from app.schemas.bill import Bill
+from app.schemas.lecture import Lecture
+from app.schemas.student import Student
 from app.tools.database import engine
+from app.tools.get_current_academy import get_current_academy
 from app.tools.s3 import upload_image_to_s3
 
 router = APIRouter(prefix="/academy", tags=["Academy"])
@@ -60,7 +65,7 @@ class StudentIn(BaseModel):
 
 
 @router.post("/student")
-def add_student(student: StudentIn, academy_id: Depends(get_current_academy)):
+def add_student(student: StudentIn, academy_id: dict = Depends(get_current_academy)):
     image_url = None
     if student.image_dataurl:
         image_url = upload_image_to_s3(student.image_dataurl)
@@ -80,13 +85,13 @@ def add_student(student: StudentIn, academy_id: Depends(get_current_academy)):
 
 
 @router.get("/student")
-def get_student(student_id: int, academy_id: Depends(get_current_academy)):
+def get_student(student_id: int, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         return session.query(Student).get(student_id, academy_id)
 
 
 @router.delete("/student")
-def delete_student(student_id: int, academy_id: Depends(get_current_academy)):
+def delete_student(student_id: int, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         session.query(Student).delete(student_id, academy_id)
         session.commit()
@@ -94,7 +99,7 @@ def delete_student(student_id: int, academy_id: Depends(get_current_academy)):
 
 
 @router.put("/student")
-def update_student(student_id: int, student: StudentIn, academy_id: Depends(get_current_academy)):
+def update_student(student_id: int, student: StudentIn, academy_id: dict = Depends(get_current_academy)):
     image_url = None
     if student.image_dataurl:
         image_url = upload_image_to_s3(student.image_dataurl)
@@ -118,7 +123,7 @@ class LectureIn(BaseModel):
 
 
 @router.post("/lecture")
-def add_lecture(lecture: LectureIn, academy_id: Depends(get_current_academy)):
+def add_lecture(lecture: LectureIn, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         db_lecture = Lecture(
             academy_id=academy_id,
@@ -134,13 +139,13 @@ def add_lecture(lecture: LectureIn, academy_id: Depends(get_current_academy)):
 
 
 @router.get("/lecture")
-def get_lecture(lecture_id: int, academy_id: Depends(get_current_academy)):
+def get_lecture(lecture_id: int, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         return session.query(Lecture).get(lecture_id, academy_id)
 
 
 @router.delete("/lecture")
-def delete_lecture(lecture_id: int, academy_id: Depends(get_current_academy)):
+def delete_lecture(lecture_id: int, academy_id: dict = Depends(get_current_academy)):
     # check if academy_id is correct
     with Session(engine) as session:
         # queryy lectur
@@ -151,7 +156,7 @@ def delete_lecture(lecture_id: int, academy_id: Depends(get_current_academy)):
 
 
 @router.put("/lecture")
-def update_lecture(lecture_id: int, lecture: LectureIn, academy_id: Depends(get_current_academy)):
+def update_lecture(lecture_id: int, lecture: LectureIn, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         db_lecture = session.query(Lecture).get(lecture_id, academy_id)
         db_lecture.name = lecture.name
@@ -172,7 +177,7 @@ class BillIn(BaseModel):
 
 
 @router.post("/bill")
-def add_bill(bill_data: BillIn, academy_id: Depends(get_current_academy)):
+def add_bill(bill_data: BillIn, academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         query_student = session.query(Student).get(bill_data.student_id, academy_id)
         query_lecture = session.query(Lecture).get(bill_data.lecture_id, academy_id)
@@ -196,7 +201,7 @@ def add_bill(bill_data: BillIn, academy_id: Depends(get_current_academy)):
 
 
 @router.get("/bill-list")
-def get_bill(paid: Optional[bool], academy_id: Depends(get_current_academy)):
+def get_bill(paid: Optional[bool], academy_id: dict = Depends(get_current_academy)):
     with Session(engine) as session:
         if paid:
             return session.query(Bill).filter(academy_id, Bill.is_paid).all()

@@ -2,10 +2,14 @@ import styled from 'styled-components';
 import { ReactComponent as LogoSVG } from '../assets/logo.svg';
 import { Button } from '../global/Button';
 import { colors } from '../colors';
+import { useRecoilState } from 'recoil';
+import { scrollYState } from '../states';
 
 export function Header() {
+  const [scroll] = useRecoilState(scrollYState);
+
   return (
-    <Container>
+    <Container className="header" $scroll={scroll}>
       <Logo />
       <ButtonGroup>
         <Button backgroundColor={colors.white} color={colors.white} isBordered>
@@ -17,8 +21,10 @@ export function Header() {
   );
 }
 
-const Container = styled.div`
-  position: absolute;
+const Container = styled.div<{
+  $scroll: number;
+}>`
+  position: ${({ $scroll }) => ($scroll < 7000 ? 'fixed' : 'absolute')};
 
   width: 100vw;
   height: 120px;
@@ -27,6 +33,8 @@ const Container = styled.div`
 
   display: flex;
   align-items: center;
+
+  z-index: 1;
 `;
 
 const Logo = styled(LogoSVG)`

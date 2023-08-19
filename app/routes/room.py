@@ -16,7 +16,6 @@ router = APIRouter(prefix="/room", tags=["Room"])
 
 
 class MakeReservation(BaseModel):
-    academy_id: int
     room_id: int
     start_date: date
     end_date: date
