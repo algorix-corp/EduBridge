@@ -14,7 +14,6 @@ import { SignUp } from './components/Auth/SignUp.tsx';
 import { SignIn } from './components/Auth/SignIn.tsx';
 import { Toaster } from 'react-hot-toast';
 import { AcademySelection } from './components/Academy/AcademySelection.tsx';
-import { AuthProvider } from './components/Auth/AuthContext.tsx';
 
 const router = createBrowserRouter([
   {
@@ -91,7 +90,6 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <DatesProvider settings={{ firstDayOfWeek: 0 }}>
         <RecoilRoot>
@@ -99,6 +97,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <RouterProvider router={router} />
         </RecoilRoot>
       </DatesProvider>
-    </MantineProvider>
-  </AuthProvider>,
+    </MantineProvider>,
 );

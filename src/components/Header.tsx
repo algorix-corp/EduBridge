@@ -4,9 +4,8 @@ import { ReactComponent as BlackLogoSVG } from '../assets/logo_black.svg';
 import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
-import { scrollYState } from '../states';
+import { loggedInState, scrollYState } from '../states';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthContext } from './Auth/AuthContext';
 
 interface HeaderProps {
   type: 'white' | 'transparent';
@@ -14,12 +13,12 @@ interface HeaderProps {
 
 export function Header({ type }: HeaderProps) {
   const [scroll] = useRecoilState(scrollYState);
-  const { isAuthenticated } = useAuthContext();
+  const [loggedin] = useRecoilState(loggedInState);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const signInLink = isAuthenticated ? '/building' : '/auth/signin';
-  const signUpLink = isAuthenticated ? '/academy' : '/auth/signup';
+  const signInLink = loggedin ? '/building' : '/auth/signin';
+  const signUpLink = loggedin ? '/academy' : '/auth/signup';
 
   const Logo = type === 'white' ? BlackLogo : WhiteLogo;
 
@@ -43,14 +42,14 @@ export function Header({ type }: HeaderProps) {
             color={colors.black}
             isBordered
           >
-            {isAuthenticated ? 'Building Owner' : 'Sign In'}
+            {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
           <Button
             onClick={() => navigate(signUpLink)}
             backgroundColor={colors.blue}
             color={colors.white}
           >
-            {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
+            {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
         </ButtonGroup>
       ) : (
@@ -61,10 +60,10 @@ export function Header({ type }: HeaderProps) {
             color={colors.white}
             isBordered
           >
-            {isAuthenticated ? 'Building Owner' : 'Sign In'}
+            {loggedin ? 'Building Owner' : 'Sign In'}
           </Button>
           <Button onClick={() => navigate(signUpLink)}>
-            {isAuthenticated ? 'Academy Owner' : 'Sign Up'}
+            {loggedin ? 'Academy Owner' : 'Sign Up'}
           </Button>
         </ButtonGroup>
       )}

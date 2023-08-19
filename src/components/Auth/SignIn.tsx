@@ -6,9 +6,10 @@ import api from '../../api/api.ts';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
-import { colors } from '../../colors/index.ts';
+import { colors } from '../../colors';
 import linePNG from '../../assets/line.png';
-import { useAuthContext } from './AuthContext.tsx';
+import { useRecoilState } from 'recoil';
+import { loggedInState } from '../../states';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -32,12 +33,11 @@ export function SignIn() {
     },
   });
 
-  const { setAuthenticated } = useAuthContext();
   interface logindata {
     email: string;
     password: string;
   }
-
+  const [, setLoggedin] = useRecoilState<boolean>(loggedInState);
   const login = (values: logindata) => {
     const randomstr = Math.random().toString(36).substring(7);
     toast.loading('Logging in...', { id: randomstr });
@@ -51,7 +51,7 @@ export function SignIn() {
       .then(r => {
         localStorage.setItem('token', r.data.token);
         toast.success('Successfully logged in!', { id: randomstr });
-        setAuthenticated(true);
+        setLoggedin(true);
         navigate('/');
       })
       .catch(() => {
