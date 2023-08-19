@@ -69,5 +69,5 @@ const Text = styled.p<{
   display: inline-block;
   color: ${({ $color }) => $color};
 
-  font-weight: 500;
+  font-weight: 600;
 `;
