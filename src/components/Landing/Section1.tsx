@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { ReactComponent as LogoSVG } from '../../assets/logo.svg';
+import { ReactComponent as LogoSVG } from '../../assets/logo_white.svg';
 import { ReactComponent as AcademySVG } from '../../assets/academy.svg';
 import { ReactComponent as StarsSVG } from '../../assets/stars.svg';
 
@@ -56,11 +56,11 @@ export function Section1() {
         $scroll={scroll}
         $transform={transform}
       />
-      <Title $scroll={scroll} $startPoint={2500} $endPoint={7000}>
+      <Title $scroll={scroll} $startPoint={2500} $endPoint={6000}>
         <Logo /> is an <Span>All-in-One solution</Span>
         {'\n'}for small-sized academies.
       </Title>
-      <Title $scroll={scroll} $startPoint={7500} $endPoint={12000}>
+      <Title $scroll={scroll} $startPoint={6500} $endPoint={10000}>
         Everything necessary for <Academy /> academy{'\n'}is in <Stars /> this
         platform, even for the real estate.
       </Title>
@@ -156,7 +156,7 @@ const Academy = styled(AcademySVG)`
 
 const Stars = styled(StarsSVG)`
   position: relative;
-  top: 7px;
+  top: 5px;
   margin-left: 10px;
 
   width: 40px;

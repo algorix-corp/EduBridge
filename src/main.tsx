@@ -17,7 +17,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <>
-        <Header />
+        <Header type="transparent" />
         <Landing />
         <Outlet />
       </>
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     path: '/building',
     element: (
       <>
-        <Header />
+        <Header type="white" />
         <Outlet />
       </>
     ),
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
     path: '/academy',
     element: (
       <>
-        <Header />
+        <Header type="white" />
         <Outlet />
       </>
     ),
