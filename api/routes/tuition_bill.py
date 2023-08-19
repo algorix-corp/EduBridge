@@ -87,14 +87,14 @@ def get_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user
 def pay_tuition_bill(tuition_bill_id: int):
     with Session(engine) as session:
         tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
-        if not tuition_bill or tuition_bill.paid:
+        if not tuition_bill or tuition_bill.is_paid:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
         if tuition_bill.stripe_session_id:
             session = stripe.checkout.Session.retrieve(tuition_bill.stripe_session_id)
             if session.status is "open":
                 return RedirectResponse(session.url, status_code=303)
             elif session.status is "complete":
-                tuition_bill.paid = True
+                tuition_bill.is_paid = True
                 session.commit()
                 session.refresh(tuition_bill)
                 return {"message": "TuitionBill paid successfully"}
