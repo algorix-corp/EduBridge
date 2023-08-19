@@ -4,18 +4,25 @@ import { Button } from '../global/Button';
 import { colors } from '../colors';
 import { useRecoilState } from 'recoil';
 import { scrollYState } from '../states';
+import { useNavigate } from 'react-router-dom';
 
 export function Header() {
   const [scroll] = useRecoilState(scrollYState);
 
+  const navigate = useNavigate();
   return (
     <Container className="header" $scroll={scroll}>
       <Logo />
       <ButtonGroup>
-        <Button backgroundColor={colors.white} color={colors.white} isBordered>
+        <Button
+          onClick={() => navigate('/building')}
+          backgroundColor={colors.white}
+          color={colors.white}
+          isBordered
+        >
           Building Manager
         </Button>
-        <Button>Academy</Button>
+        <Button onClick={() => navigate('/academy')}>Academy</Button>
       </ButtonGroup>
     </Container>
   );
