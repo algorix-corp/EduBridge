@@ -6,6 +6,8 @@ import 'gridjs/dist/theme/mermaid.css';
 import api from '../../api/api.ts';
 import { RowSelection } from 'gridjs/plugins/selection';
 import toast from 'react-hot-toast';
+import { Button } from '../../global/Button';
+import { colors } from '../../colors';
 
 interface Academy {
   id: number;
@@ -29,6 +31,7 @@ interface Student {
 export function AcademyStudentsDashboard() {
   const [academy_data, academy_setData] = useState<Academy | null>(null);
   const [grid_data, grid_setData] = useState<[Student] | null>(null);
+
 
   useEffect(() => {
     api
@@ -68,7 +71,29 @@ export function AcademyStudentsDashboard() {
       ])
     : [];
 
+    const handleSendMessage = () => {
+        const checkboxPlugin = Grid.config.plugin.get('Checkbox');
+
+        toast.success(`Messages sent successfully!`);
+      };
+
+      
+
     return (
+    <><ButtonContainer>
+        <Button backgroundColor={colors.black}
+            color={colors.black}
+            isBordered>Lecture</Button>
+            <Button backgroundColor={colors.black}
+            color={colors.black}
+            isBordered>Payment</Button>
+            <Button backgroundColor={colors.black}
+            color={colors.black} onClick={handleSendMessage} 
+            isBordered>Send Messages</Button>
+            <Button backgroundColor={colors.black}
+            color={colors.black}
+            isBordered>Payment</Button>
+    </ButtonContainer>
         <Container>
           {grid_data !== null ? (
             <Grid
@@ -84,7 +109,6 @@ export function AcademyStudentsDashboard() {
                 'Phone Number',
                 'Memo',
               ]}
-              search={true}
               sort={true}
               pagination={true}
               className="table"
@@ -92,7 +116,7 @@ export function AcademyStudentsDashboard() {
           ) : (
             <p>Loading...</p>
           )}
-        </Container>
+        </Container></>
       );
     }
 
@@ -100,9 +124,22 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   position: relative;
-  top: 100px;
+  top: 70px;
   margin: 0 auto;
   width: 100vw;
   height: calc(100vh - 100px);
   max-width: 1200px;
+`;
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between; 
+  top: 60px;
+  position: relative;
+  margin: 0 auto;
+  width: 100vw;
+  max-width: 1200px;
+  & > button {
+    flex: 1;
+    margin: 0 5px;
+  }
 `;

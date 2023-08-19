@@ -18,6 +18,14 @@ interface BuildingProps {
   image_url: string;
 }
 
+interface Academy {
+  id: number;
+  name: string;
+  subject: string;
+  description: string;
+  image_url: string;
+}
+
 interface RoomProps {
   capacity: number;
   id: number;
@@ -35,7 +43,7 @@ interface RoomProps {
 export function AcademyRoomReservation() {
   const navigate = useNavigate();
   const [step, setStep] = useState<number>(1);
-  const [academy, setAcademy] = useState();
+  const [academy, setAcademy] = useState<Academy | null>(null);
 
   const [building_list, setBuildingList] = useState<BuildingProps[]>([]);
   const [room_list, setRoomList] = useState<RoomProps[]>([]);
@@ -59,30 +67,14 @@ export function AcademyRoomReservation() {
       navigate('/auth/signin');
     }
     api
-      .post('/auth')
-      .then(() => {
-        api.get('/academy').then(r => {
-          setAcademy(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            r.data.map((data: any) => {
-              return {
-                contact: data.contact,
-                created_at: data.created_at,
-                description: data.description,
-                id: data.id,
-                image_url: data.image_url,
-                name: data.name,
-                owner_id: data.owner_id,
-                subject: data.subject,
-              };
-            }),
-          );
-        });
+      .get('/academy')
+      .then(r => {
+        console.log(r.data);
+        setAcademy(r.data);
       })
-      .catch(() => {
-        toast.error('An error occurred while fetching data.');
-        navigate('/');
-      });
+      .catch(() =>
+        toast.error('An error occurred while fetching academy data.'),
+      );
   }, [navigate]);
 
   function formatDate(date: Date) {
@@ -102,12 +94,18 @@ export function AcademyRoomReservation() {
       toast.error('Please select a date.');
       return;
     }
+    if (academy == null) {
+      toast.error("academy ID not yet.")
+      return;
+    }
+    const academyId = academy.map(item => item.id);
+    console.log(academyId[0])
     api
       .post('/reservation', {
         room_id: room?.id,
         start_date: formatDate(reservationDate[0]),
         end_date: formatDate(reservationDate[1]),
-        academy_id: academy?.id,
+        academy_id: academyId[0],
       })
       .then(r => {
         toast.success('Reservation created.');
