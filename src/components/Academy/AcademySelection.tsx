@@ -15,50 +15,42 @@ export function AcademySelection() {
   const navigate = useNavigate();
   return (
     <div>
-        <SelectionArea>
-            <SelectionCard>
-            <StyledCard shadow="sm" padding="lg" radius="md">
-                <Card.Section>
-                  <Image
-                    src=""
-                    height={300}
-                    alt={'student management'}
-                  />
-                </Card.Section>
-                <Button
-                  variant="light"
-                  color="yellow"
-                  fullWidth
-                  mt="md"
-                  radius="md"
-                  onClick={() => navigate(`/building/detail/${index}`)}
-                >
-                  Student Management
-                </Button>
-              </StyledCard>
-            </SelectionCard>
-            <SelectionCard>
-            <StyledCard shadow="sm" padding="lg" radius="md">
-                <Card.Section>
-                  <Image
-                    src=""
-                    height={300}
-                    alt={'room reservation'}
-                  />
-                </Card.Section>
-                <Button
-                  variant="light"
-                  color="yellow"
-                  fullWidth
-                  mt="md"
-                  radius="md"
-                  onClick={() => navigate(`/building/detail/${index}`)}
-                >
-                  Room Reservation
-                </Button>
-              </StyledCard>
-            </SelectionCard>
-        </SelectionArea>
+      <SelectionArea>
+        <SelectionCard>
+          <StyledCard shadow="sm" padding="lg" radius="md">
+            <Card.Section>
+              <Image src="" height={300} alt={'student management'} />
+            </Card.Section>
+            <Button
+              variant="light"
+              color="yellow"
+              fullWidth
+              mt="md"
+              radius="md"
+              onClick={() => navigate(`/building/detail/${index}`)}
+            >
+              Student Management
+            </Button>
+          </StyledCard>
+        </SelectionCard>
+        <SelectionCard>
+          <StyledCard shadow="sm" padding="lg" radius="md">
+            <Card.Section>
+              <Image src="" height={300} alt={'room reservation'} />
+            </Card.Section>
+            <Button
+              variant="light"
+              color="yellow"
+              fullWidth
+              mt="md"
+              radius="md"
+              onClick={() => navigate(`/building/detail/${index}`)}
+            >
+              Room Reservation
+            </Button>
+          </StyledCard>
+        </SelectionCard>
+      </SelectionArea>
     </div>
   );
 }
