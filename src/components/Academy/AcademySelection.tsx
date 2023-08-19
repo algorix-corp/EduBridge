@@ -17,12 +17,12 @@ export function AcademySelection() {
     <div>
         <SelectionArea>
             <SelectionCard>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <StyledCard shadow="sm" padding="lg" radius="md">
                 <Card.Section>
                   <Image
                     src=""
                     height={300}
-                    alt={'building-1'}
+                    alt={'student management'}
                   />
                 </Card.Section>
                 <Button
@@ -35,15 +35,15 @@ export function AcademySelection() {
                 >
                   Student Management
                 </Button>
-              </Card>
+              </StyledCard>
             </SelectionCard>
             <SelectionCard>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <StyledCard shadow="sm" padding="lg" radius="md">
                 <Card.Section>
                   <Image
                     src=""
                     height={300}
-                    alt={'building-2'}
+                    alt={'room reservation'}
                   />
                 </Card.Section>
                 <Button
@@ -56,7 +56,7 @@ export function AcademySelection() {
                 >
                   Room Reservation
                 </Button>
-              </Card>
+              </StyledCard>
             </SelectionCard>
         </SelectionArea>
     </div>
@@ -75,4 +75,11 @@ const SelectionArea = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: #040404;
+`;
+
+const StyledCard = styled(Card)`
+  background-color: #090909;
+  color: white;
+  cursor: pointer;
 `;
