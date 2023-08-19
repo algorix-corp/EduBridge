@@ -59,20 +59,16 @@ def get_building(building_id: int, current_user=Depends(get_current_user)):
 
 
 @router.put("/{building_id}")
-def update_building(building_id: int, building: BuildingUpdate, current_user=Depends(get_current_user)):
+def update_building(building_id: int, new_building: BuildingUpdate, current_user=Depends(get_current_user)):
     with Session(engine) as session:
         building = session.get(Building, building_id)
         if not building:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found")
         if building.owner_id != current_user.id and current_user.role != "admin":
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-        building_data = building.dict()
-        update_data = building.dict(exclude_unset=True)
-        updated_building = Building(**building_data, **update_data)
-        # session.add(updated_building)
+        updated_building = Building(**new_building.dict())
         session.merge(updated_building)
         session.commit()
-        session.refresh(updated_building)
         return {"message": "Building updated successfully", "building": updated_building}
 
 
