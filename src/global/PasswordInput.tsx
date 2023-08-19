@@ -12,10 +12,6 @@ const Container = styled(Input)`
     font-weight: 600;
   }
 
-  & label span {
-    display: none;
-  }
-
   & div {
     border: 0;
   }

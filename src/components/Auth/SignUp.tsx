@@ -23,11 +23,15 @@ export function SignUp() {
       password: '',
       name: '',
       phone: '',
-      role: '',
+      role: 'admin',
     },
 
     validate: {
       email: value => checkEmail(value),
+      password: value => !!value,
+      name: value => !!value,
+      phone: value => !!value,
+      role: value => !!value,
     },
   });
 
@@ -102,7 +106,8 @@ export function SignUp() {
             placeholder="Choose your role"
             defaultValue={'building-owner'}
             data={[
-              { value: 'building-owner', label: 'Building Owner' },
+              { value: 'admin', label: 'Admin' }
+              { value: 'building', label: 'Building Owner' },
               { value: 'academy', label: 'Academy' },
             ]}
           />
