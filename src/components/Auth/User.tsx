@@ -3,14 +3,11 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api.ts';
 import styled from 'styled-components';
-import { Group, Modal } from '@mantine/core';
+import { Group } from '@mantine/core';
 import { Button } from '../../global/Button.tsx';
 import { colors } from '../../colors';
-import { useDisclosure } from '@mantine/hooks';
-import { TextInput } from '../../global/TextInput.tsx';
+import linePNG from '../../assets/line.png';
 import { Form } from '../../global/Form.tsx';
-import { useForm } from '@mantine/form';
-import { PasswordInput } from '../../global/PasswordInput.tsx';
 
 interface UserProps {
   password: string;
@@ -23,31 +20,8 @@ interface UserProps {
   image_url: string;
 }
 
-interface updateprofile {
-  name: string;
-  phone: string;
-}
-
-interface updatepassword {
-  password: string;
-}
-
 export function User() {
   const navigate = useNavigate();
-
-  const [opened, { open, close }] = useDisclosure(false);
-  const form = useForm({
-    initialValues: {
-      name: '',
-      phone: '',
-    },
-  });
-  const form2 = useForm({
-    initialValues: {
-      password: '',
-    },
-  });
-  const [modalmode, setModalMode] = useState<string>('edit');
   const [data, setData] = useState<UserProps | null>(null);
   useEffect(() => {
     if (!localStorage.getItem('token')) {
@@ -65,6 +39,7 @@ export function User() {
       });
   }, [navigate]);
 
+  const edit = () => {};
   const delacc = () => {
     api
       .delete('/user')
@@ -86,185 +61,115 @@ export function User() {
     navigate('/');
   };
 
-  const update_profile = (values: updateprofile) => {
-    const body = {
-      name: values.name,
-      phone: values.phone,
-      image_dataurl: null,
-    };
-    api
-      .put('/user', body)
-      .then(() => {
-        toast.success('Successfully updated profile.');
-        close();
-      })
-      .catch(() => {
-        toast.error('An error occurred while updating profile.');
-        close();
-      });
-  };
-
-  const update_password = (values: updatepassword) => {
-    const body = {
-      password: values.password,
-    };
-    api
-      .put('/user/password', body)
-      .then(() => {
-        toast.success('Successfully updated password.');
-        close();
-      })
-      .catch(() => {
-        toast.error('An error occurred while updating password.');
-        close();
-      });
-  };
-
   if (data) {
     return (
-      <>
-        <Modal
-          opened={opened}
-          onClose={close}
-          title="Change your data"
-          style={{ padding: '20px' }}
-          centered
-        >
-          {modalmode === 'edit' ? (
-            <ChangeDataArea>
-              <Form>
-                <form
-                  onSubmit={form.onSubmit(values => {
-                    update_profile(values);
-                  })}
-                >
-                  <TextInput withAsterisk label="Name" placeholder="New Name" />
-                  <TextInput
-                    withAsterisk
-                    label="Phone Number"
-                    placeholder="New Phone Number"
-                  />
-                  <Group position="right" mt={50}>
-                    <Button
-                      backgroundColor={colors.blue}
-                      color={colors.white}
-                      onClick={() => {
-                        close();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      backgroundColor={colors.blue}
-                      color={colors.white}
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </Group>
-                </form>
-              </Form>
-            </ChangeDataArea>
-          ) : (
-            <ChangeDataArea>
-              <Form>
-                <form
-                  onSubmit={form2.onSubmit(values => {
-                    update_password(values);
-                  })}
-                >
-                  <PasswordInput
-                    withAsterisk
-                    label="Password"
-                    placeholder="New Password"
-                  />
-                  <Group position="right" mt={50}>
-                    <Button
-                      backgroundColor={colors.blue}
-                      color={colors.white}
-                      onClick={() => {
-                        close();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      backgroundColor={colors.blue}
-                      color={colors.white}
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </Group>
-                </form>
-              </Form>
-            </ChangeDataArea>
-          )}
-        </Modal>
-
-        <UserArea>
-          <h1>Hello {data.name}</h1>
-          <h3>Role: {data.role}</h3>
-          <h3>Phone Number: {data.phone}</h3>
-          <h3>Email: {data.email}</h3>
-          <Group position="right">
-            <Button
-              backgroundColor={colors.blue}
-              color={colors.white}
-              onClick={() => {
-                setModalMode('edit');
-                open();
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              backgroundColor={colors.blue}
-              color={colors.white}
-              onClick={() => {
-                setModalMode('changepassword');
-                open();
-              }}
-            >
-              Change Password
-            </Button>
-
-            <Button
-              backgroundColor={colors.black}
-              color={colors.white}
-              onClick={signout}
-            >
-              Sign Out
-            </Button>
-            <Button
-              backgroundColor={colors.black}
-              color={colors.white}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    'Are you sure you want to delete your account?',
-                  )
-                ) {
-                  delacc();
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </UserArea>
-      </>
+      <Container>
+        <Form>
+          <InfoGroup>
+            <Title>Hello, {data.name} 👋</Title>
+            <Info>
+              <Block>Role</Block>
+              {data.role}
+            </Info>
+            <Info>
+              <Block>Phone</Block>
+              {data.phone}
+            </Info>
+            <Info>
+              <Block>Email</Block>
+              {data.email}
+            </Info>
+            <ButtonGroup>
+              <Button
+                backgroundColor={colors.black}
+                color={colors.black}
+                onClick={edit}
+                isBordered
+              >
+                Edit
+              </Button>
+              <Button
+                backgroundColor={colors.black}
+                color={colors.white}
+                onClick={signout}
+              >
+                Sign Out
+              </Button>
+              <Button
+                backgroundColor={colors.red}
+                color={colors.white}
+                onClick={delacc}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
+          </InfoGroup>
+        </Form>
+      </Container>
     );
   } else {
-    return <div></div>;
+    return <Container />;
   }
 }
 
-const UserArea = styled.div`
-  margin: 30px 200px;
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  background-color: ${colors.blue};
+  background-image: url('${linePNG}');
+  background-attachment: fixed;
+  background-position: center;
+
+  z-index: -1;
 `;
 
-const ChangeDataArea = styled.div`
-  width: 400px;
-  height: 300px;
+const InfoGroup = styled.div``;
+
+const Title = styled.p`
+  font-size: 30px;
+  font-weight: 700;
+
+  margin-bottom: 20px;
+`;
+
+const Info = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+
+  margin-bottom: 5px;
+`;
+
+const Block = styled.div`
+  display: inline-block;
+
+  position: relative;
+  top: -1px;
+  margin-right: 7px;
+
+  background-color: ${colors.blue};
+  width: 50px;
+
+  padding: 2px 0 2px 0;
+  font-size: 12px;
+  color: ${colors.white};
+  border-radius: 121234px;
+
+  text-align: center;
+`;
+
+const ButtonGroup = styled(Group)`
+  display: flex;
+  justify-content: center;
+
+  position: relative;
+  margin-top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
 `;

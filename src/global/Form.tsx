@@ -6,9 +6,9 @@ interface Form {
   children: ReactNode;
 }
 
-export function Form({ children }: Form) {
+export function Form({ children, ...props }: Form) {
   return (
-    <Container>
+    <Container {...props}>
       <Box>{children}</Box>
     </Container>
   );
