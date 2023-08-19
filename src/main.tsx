@@ -90,12 +90,12 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-        <RecoilRoot>
-          <Toaster position="top-center" reverseOrder={false} />
-          <RouterProvider router={router} />
-        </RecoilRoot>
-      </DatesProvider>
-    </MantineProvider>,
+  <MantineProvider withGlobalStyles withNormalizeCSS>
+    <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+      <RecoilRoot>
+        <Toaster position="top-center" reverseOrder={false} />
+        <RouterProvider router={router} />
+      </RecoilRoot>
+    </DatesProvider>
+  </MantineProvider>,
 );
