@@ -24,10 +24,8 @@ def join_lecture(lecture_id: int, join_lecture: JoinLectureCreate, current_user=
             student = session.query(Student).filter(Student.id == join_lecture.student_id).first()
             if not student:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
-            if student.role != "student":
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not student")
-        else:
-            student = current_user
+
+        student = current_user
 
         if lecture.academy_id != student.academy_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
