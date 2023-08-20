@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
 import api from '../../api/api.ts';
+// eslint-disable-next-line
+// @ts-ignore
 import { RowSelection } from 'gridjs/plugins/selection';
 import toast from 'react-hot-toast';
 import { Button } from '../../global/Button';
@@ -32,7 +33,6 @@ export function AcademyStudentsDashboard() {
   const [academy_data, academy_setData] = useState<Academy | null>(null);
   const [grid_data, grid_setData] = useState<[Student] | null>(null);
 
-
   useEffect(() => {
     api
       .get('/academy')
@@ -60,7 +60,6 @@ export function AcademyStudentsDashboard() {
         );
     }
   }, [academy_data]); // academy_data가 업데이트될 때마다 재실행
-  
 
   const data = grid_data
     ? grid_data.map(status => [
@@ -71,54 +70,59 @@ export function AcademyStudentsDashboard() {
       ])
     : [];
 
-    const handleSendMessage = () => {
-        const checkboxPlugin = Grid.config.plugin.get('Checkbox');
+  const handleSendMessage = () => {
+    const checkboxPlugin = Grid.config.plugin.get('Checkbox');
 
-        toast.success(`Messages sent successfully!`);
-      };
+    toast.success(`Messages sent successfully!`);
+  };
 
-      
-
-    return (
-    <><ButtonContainer>
-        <Button backgroundColor={colors.black}
-            color={colors.black}
-            isBordered>Lecture</Button>
-            <Button backgroundColor={colors.black}
-            color={colors.black}
-            isBordered>Payment</Button>
-            <Button backgroundColor={colors.black}
-            color={colors.black} onClick={handleSendMessage} 
-            isBordered>Send Messages</Button>
-            <Button backgroundColor={colors.black}
-            color={colors.black}
-            isBordered>Payment</Button>
-    </ButtonContainer>
-        <Container>
-          {grid_data !== null ? (
-            <Grid
-              data={data}
-              columns={[
-                {
-                  id: 'Checkbox',
-                  name: 'Select',
-                  plugin: { component: RowSelection },
-                },
-                'Student Name',
-                'Grade',
-                'Phone Number',
-                'Memo',
-              ]}
-              sort={true}
-              pagination={true}
-              className="table"
-            />
-          ) : (
-            <p>Loading...</p>
-          )}
-        </Container></>
-      );
-    }
+  return (
+    <>
+      <ButtonContainer>
+        <Button backgroundColor={colors.black} color={colors.black} isBordered>
+          Lecture
+        </Button>
+        <Button backgroundColor={colors.black} color={colors.black} isBordered>
+          Payment
+        </Button>
+        <Button
+          backgroundColor={colors.black}
+          color={colors.black}
+          onClick={handleSendMessage}
+          isBordered
+        >
+          Send Messages
+        </Button>
+        <Button backgroundColor={colors.black} color={colors.black} isBordered>
+          Payment
+        </Button>
+      </ButtonContainer>
+      <Container>
+        {grid_data !== null ? (
+          <Grid
+            data={data}
+            columns={[
+              {
+                id: 'Checkbox',
+                name: 'Select',
+                plugin: { component: RowSelection },
+              },
+              'Student Name',
+              'Grade',
+              'Phone Number',
+              'Memo',
+            ]}
+            sort={true}
+            pagination={true}
+            className="table"
+          />
+        ) : (
+          <p>Loading...</p>
+        )}
+      </Container>
+    </>
+  );
+}
 
 const Container = styled.div`
   display: flex;
@@ -132,12 +136,13 @@ const Container = styled.div`
 `;
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   top: 60px;
   position: relative;
   margin: 0 auto;
   width: 100vw;
   max-width: 1200px;
+
   & > button {
     flex: 1;
     margin: 0 5px;
