@@ -1,7 +1,6 @@
 import random
 import string
 
-import requests
 import stripe
 from fastapi.responses import RedirectResponse
 
@@ -18,19 +17,20 @@ def make_random_6_char():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
 
 
-def make_short_url(url: str):
-    url = "https://t.ly/api/v1/link/shorten"
-    Bearer = "naBHqsdI8DbuogNRQxNwx9gYT0OCcG7pqoInUALpUSYOjiOE0Lf8y7qu3kOO"
-    body = {
-        "long_url": url,
-    }
-    headers = {
-        "Authorization": f"Bearer {Bearer}",
-        "Content-Type": "application/json",
-    }
-
-    resp = requests.post(url, headers=headers, json=body)
-    return str(resp.json()["short_url"])
+# def make_short_url(url: str):
+#     url = "https://t.ly/api/v1/link/shorten"
+#     Bearer = "naBHqsdI8DbuogNRQxNwx9gYT0OCcG7pqoInUALpUSYOjiOE0Lf8y7qu3kOO"
+#     body = {
+#         "long_url": url,
+#     }
+#     headers = {
+#         "Authorization": f"Bearer {Bearer}",
+#         "Content-Type": "application/json",
+#         "Accept": "application/json"
+#     }
+#
+#     resp = requests.post(url, json=body, headers=headers)
+#     return resp.text
 
 
 class TuitionBillCreate(BaseModel):
@@ -52,6 +52,18 @@ class TuitionBillUpdate(BaseModel):
 stripe.api_key = "sk_test_51LwFptLCjb1ULAaJ4f4Z9mIvpwGwrmiOY6FsMurzhHQY8EjfnKiDwAEWSe1VWz7uIX6K1qHpPpGryZZxVDnKJJr600cOV9ouvk"
 
 
+@router.get("/payment_success")
+def payment_success(session_code: str):
+    with Session(engine) as session:
+        tuition_bill = session.query(TuitionBill).filter(TuitionBill.stripe_session_id == session_code).first()
+        if tuition_bill is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+        tuition_bill.is_paid = True
+        session.commit()
+        session.refresh(tuition_bill)
+        return RedirectResponse("https://edubridge.algorix.io/success")
+
+
 @router.post("/")
 def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(get_current_user)):
     if current_user.role == "admin":
@@ -64,7 +76,7 @@ def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(ge
             resp = pay_tuition_bill(tuition_bill.id)
             student = session.query(Student).filter(Student.id == tuition_bill.student_id).first()
             phone = student.parent_phone
-            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {make_short_url(resp['url'])}")
+            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {resp['url']}")
 
             return tuition_bill
     elif current_user.role == "academy":
@@ -77,7 +89,7 @@ def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(ge
             resp = pay_tuition_bill(tuition_bill.id)
             student = session.query(Student).filter(Student.id == tuition_bill.student_id).first()
             phone = student.parent_phone
-            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {make_short_url(resp['url'])}")
+            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {resp['url']}")
 
             return tuition_bill
     else:
@@ -166,16 +178,6 @@ def pay_tuition_bill(tuition_bill_id: int):
     }
 
 
-@router.get("/payment_success")
-def payment_success(session_code: str):
-    with Session(engine) as session:
-        tuition_bill = session.query(TuitionBill).filter(TuitionBill.stripe_session_id == session_code).first()
-        if tuition_bill is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
-        tuition_bill.is_paid = True
-        session.commit()
-        session.refresh(tuition_bill)
-        return RedirectResponse("https://edubridge.algorix.io/success")
 
 
 # @router.get("/cancel")
