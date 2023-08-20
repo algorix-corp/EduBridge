@@ -18,6 +18,8 @@ class ReservationCreate(BaseModel):
 @router.post("/")
 def create_reservation(reservation: ReservationCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
+        if reservation.start_date > reservation.end_date:
+            raise HTTPException(status_code=400, detail="Time traveler!")
         if current_user.role == "admin":
             overlapping_reservations = session.query(Reservation).filter(
                 Reservation.room_id == reservation.room_id and 
