@@ -16,25 +16,19 @@ class ReservationCreate(BaseModel):
 
 
 @router.post("/")
-def create_reservation(reservation: ReservationCreate, current_user: User = Depends(get_current_user)):
+def create_reservation(reservation_create: ReservationCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
-        if reservation.start_date > reservation.end_date:
+        if reservation_create.start_date > reservation_create.end_date:
             raise HTTPException(status_code=400, detail="Time traveler!")
+
         if current_user.role == "admin":
             overlapping_reservations = session.query(Reservation).filter(
-                Reservation.room_id == reservation.room_id and 
+                Reservation.room_id == reservation_create.room_id,
                 and_(
                     or_(
-                        Reservation.start_date <= reservation.start_date,
-                        Reservation.end_date >= reservation.start_date
-                    ),
-                    or_(
-                        Reservation.start_date <= reservation.end_date,
-                        Reservation.end_date >= reservation.end_date
-                    ),
-                    or_(
-                        Reservation.start_date >= reservation.start_date,
-                        Reservation.end_date <= reservation.end_date
+                        and_(Reservation.start_date <= reservation_create.start_date, Reservation.end_date >= reservation_create.start_date),
+                        and_(Reservation.start_date <= reservation_create.end_date, Reservation.end_date >= reservation_create.end_date),
+                        and_(Reservation.start_date >= reservation_create.start_date, Reservation.end_date <= reservation_create.end_date)
                     )
                 )
             ).all()
@@ -43,15 +37,16 @@ def create_reservation(reservation: ReservationCreate, current_user: User = Depe
                 raise HTTPException(status_code=400, detail="Reservation overlaps with existing reservation")
 
             # check room is available
-            room = session.query(Room).filter(reservation.room_id).first()
+            room = session.query(Room).filter_by(id=reservation_create.room_id).first()
             if not room.available:
                 raise HTTPException(status_code=400, detail="Room is not available")
+
             # create reservation
-            reservation = Reservation(**reservation.dict())
-            session.add(reservation)
+            new_reservation = Reservation(**reservation_create.dict())
+            session.add(new_reservation)
             session.commit()
-            session.refresh(reservation)
-            return reservation
+            session.refresh(new_reservation)
+            return new_reservation
         elif current_user.role == "academy":
             # check user is owner of academy
             academy = session.query(Academy).filter(reservation.academy_id).first()
