@@ -44,6 +44,7 @@ def create_reservation(reservation: ReservationCreate, current_user: User = Depe
             room = session.query(Room).filter(reservation.room_id).first()
             if not room.available:
                 raise HTTPException(status_code=400, detail="Room is not available")
+            
             # create reservation
             reservation = Reservation(**reservation.dict())
             session.add(reservation)
