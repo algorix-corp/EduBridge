@@ -286,7 +286,7 @@ const ProfileEdit = styled.input`
   border-left: 0;
   border-right: 0;
   border-top: 0;
-  border-bottom: 2px solid ${colors.gray};
+  border-bottom: 1px solid ${colors.vampgray};
   outline: none;
   font-family: inherit;
 
@@ -294,7 +294,7 @@ const ProfileEdit = styled.input`
     border-left: 0;
     border-right: 0;
     border-top: 0;
-    border-bottom: 2px solid ${colors.blue};
+    border-bottom: 1px solid ${colors.blue};
     outline: none;
   }
 `;

@@ -90,7 +90,7 @@ export function BuildingMain() {
       <div
         style={{
           width: '100vw',
-          height: 325,
+          height: 275,
         }}
       />
     </Container>
@@ -99,7 +99,6 @@ export function BuildingMain() {
 
 const Container = styled.div`
   position: relative;
-  top: 50px;
   width: 100vw;
   padding: 0 200px 0 200px;
 `;
@@ -175,6 +174,10 @@ const BuildingTitle = styled.p`
   font-weight: 700;
   font-size: 34px;
   color: ${colors.pblack};
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const Pin = styled(PinSVG)`
@@ -192,7 +195,9 @@ const BuildingAddress = styled.p`
 
   color: ${colors.vampgray};
 
-  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const BuildingDescription = styled.p`
@@ -205,6 +210,9 @@ const BuildingDescription = styled.p`
   font-size: 16px;
   white-space: pre-wrap;
   line-height: 140%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   color: ${colors.pblack};
 `;

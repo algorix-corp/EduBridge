@@ -95,11 +95,11 @@ export function AcademyRoomReservation() {
       return;
     }
     if (academy == null) {
-      toast.error("academy ID not yet.")
+      toast.error('academy ID not yet.');
       return;
     }
     const academyId = academy.map(item => item.id);
-    console.log(academyId[0])
+    console.log(academyId[0]);
     api
       .post('/reservation', {
         room_id: room?.id,
