@@ -1,6 +1,7 @@
-from api.routes._imports import *
 import stripe
 from fastapi.responses import RedirectResponse
+
+from api.routes._imports import *
 
 router = APIRouter(
     prefix="/tuition_bill",
@@ -23,7 +24,9 @@ class TuitionBillUpdate(BaseModel):
     amount: Optional[int]
     memo: Optional[str] = None
 
+
 stripe.api_key = "sk_test_51LwFptLCjb1ULAaJ4f4Z9mIvpwGwrmiOY6FsMurzhHQY8EjfnKiDwAEWSe1VWz7uIX6K1qHpPpGryZZxVDnKJJr600cOV9ouvk"
+
 
 @router.post("/")
 def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(get_current_user)):
@@ -110,7 +113,8 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://ja2023api.algorix.io/tuition_bill/'+ str(tuition_bill_id) +'/pay?session_code={CHECKOUT_SESSION_ID}/pay',
+        success_url='https://ja2023api.algorix.io/tuition_bill/' + str(
+            tuition_bill_id) + '/pay?session_code={CHECKOUT_SESSION_ID}',
         cancel_url='https://ja2023api.algorix.io/tuition_bill/cancel',
     )
 

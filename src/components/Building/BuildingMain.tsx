@@ -5,7 +5,7 @@ import api from '../../api/api.ts';
 import toast from 'react-hot-toast';
 import styled from 'styled-components';
 import { Form } from '../../global/Form.tsx';
-import { colors } from '../../colors/index.ts';
+import { colors } from '../../colors';
 import { ReactComponent as OutlinedLogoSVG } from '../../assets/outlinedLogo.svg';
 import { ReactComponent as PinSVG } from '../../assets/pin.svg';
 import { Button } from '../../global/Button.tsx';
