@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core';
 import { Button } from '../../../global/Button.tsx';
 import { useForm } from '@mantine/form';
 import { biggerThan, checkExistence } from '../../../global/function';
@@ -6,6 +5,8 @@ import api from '../../../api/api.ts';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { colors } from '../../../colors/index.ts';
+import { TextInput as TEI } from '../../../global/TextInput.tsx';
+import styled from 'styled-components';
 
 export function CreateRoom() {
   const navigate = useNavigate();
@@ -68,7 +69,11 @@ export function CreateRoom() {
       });
   };
   return (
-    <div>
+    <div
+      style={{
+        padding: '0 30px 0 30px',
+      }}
+    >
       <form onSubmit={addRoomForm.onSubmit(value => addRoomProcess(value))}>
         <TextInput
           label="Unit Name"
@@ -116,20 +121,38 @@ export function CreateRoom() {
           withAsterisk
           {...addRoomForm.getInputProps('daily_price')}
         />
-        <Button
-          type="submit"
-          backgroundColor={colors.black}
-          color={colors.white}
+        <div
           style={{
             marginTop: 25,
             position: 'relative',
             left: '50%',
             transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: 15,
+            justifyContent: 'center',
           }}
         >
-          Add Room
-        </Button>
+          <Button
+            type="submit"
+            backgroundColor={colors.black}
+            color={colors.black}
+            isBordered
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            backgroundColor={colors.black}
+            color={colors.white}
+          >
+            Add Room
+          </Button>
+        </div>
       </form>
     </div>
   );
 }
+
+const TextInput = styled(TEI)`
+  margin-top: 15px;
+`;
