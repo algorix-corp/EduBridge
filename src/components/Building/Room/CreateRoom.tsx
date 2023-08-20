@@ -5,6 +5,7 @@ import { biggerThan, checkExistence } from '../../../global/function';
 import api from '../../../api/api.ts';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { colors } from '../../../colors/index.ts';
 
 export function CreateRoom() {
   const navigate = useNavigate();
@@ -115,7 +116,19 @@ export function CreateRoom() {
           withAsterisk
           {...addRoomForm.getInputProps('daily_price')}
         />
-        <Button type="submit">Add Room</Button>
+        <Button
+          type="submit"
+          backgroundColor={colors.black}
+          color={colors.white}
+          style={{
+            marginTop: 25,
+            position: 'relative',
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          Add Room
+        </Button>
       </form>
     </div>
   );

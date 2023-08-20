@@ -96,7 +96,6 @@ export function CreateBuilding() {
             placeholder="Pick Building Image"
             label="Building Image"
             {...form.getInputProps('image')}
-            withAsterisk
             icon={<IconUpload size={rem(14)} />}
             accept="image/png,image/jpeg"
           />

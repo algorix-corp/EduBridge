@@ -273,14 +273,14 @@ const Container = styled.div`
 
 const OverlayContainer = styled.div`
   position: relative;
-  width: calc(100vw - 500px);
+  width: calc(100vw - 800px);
   height: 100%;
   float: left;
 `;
 
 const PreferenceContainer = styled.div`
   position: relative;
-  width: 500px;
+  width: 800px;
   height: 100%;
   float: right;
 
