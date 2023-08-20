@@ -1,14 +1,36 @@
+import random
+import string
+
+import requests
 import stripe
 from fastapi.responses import RedirectResponse
 
 from api.routes._imports import *
 from api.tools.send_sms import send_sms
-from BitlyAPI import shorten_urls
 
 router = APIRouter(
     prefix="/tuition_bill",
     tags=["student"],
 )
+
+
+def make_random_6_char():
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+
+
+def make_short_url(url: str):
+    url = "https://t.ly/api/v1/link/shorten"
+    Bearer = "naBHqsdI8DbuogNRQxNwx9gYT0OCcG7pqoInUALpUSYOjiOE0Lf8y7qu3kOO"
+    body = {
+        "long_url": url,
+    }
+    headers = {
+        "Authorization": f"Bearer {Bearer}",
+        "Content-Type": "application/json",
+    }
+
+    resp = requests.post(url, headers=headers, json=body)
+    return resp.json().short_url
 
 
 class TuitionBillCreate(BaseModel):
