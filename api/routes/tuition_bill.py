@@ -113,7 +113,7 @@ def pay_tuition_bill(tuition_bill_id: int):
                 return {"message": "TuitionBill Already Paid"}
             else:
                 return {
-                    "url": strp_session.url
+                    "url": strp_session["url"]
                 }
 
     stripe_session = stripe.checkout.Session.create(
@@ -139,7 +139,7 @@ def pay_tuition_bill(tuition_bill_id: int):
         session.refresh(tuition_bill)
 
     return {
-        "url": stripe_session.url
+        "url": stripe_session["url"]
     }
 
 
