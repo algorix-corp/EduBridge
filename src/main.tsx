@@ -21,6 +21,8 @@ import { ModalsProvider } from '@mantine/modals';
 import { CreateRoom } from './components/Building/Room/CreateRoom.tsx';
 import { RoomList } from './components/Building/Room/RoomList.tsx';
 import { RoomDetail } from './components/Building/Room/RoomDetail.tsx';
+import { Success } from './pages/Success.tsx';
+import { Cancel } from './pages/Cancel.tsx';
 
 const router = createBrowserRouter([
   {
@@ -132,6 +134,24 @@ const router = createBrowserRouter([
       <>
         <Header type="transparent" />
         <User />
+      </>
+    ),
+  },
+  {
+    path: '/success',
+    element: (
+      <>
+        <Header type="white" />
+        <Success />
+      </>
+    ),
+  },
+  {
+    path: '/cancel',
+    element: (
+      <>
+        <Header type="white" />
+        <Cancel />
       </>
     ),
   },

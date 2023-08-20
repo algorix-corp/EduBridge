@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
 import api from '../../api/api.ts';
+// eslint-disable-next-line
+// @ts-ignore
 import { RowSelection } from 'gridjs/plugins/selection';
 import toast from 'react-hot-toast';
 import { Button } from '../../global/Button';
@@ -141,6 +142,7 @@ const ButtonContainer = styled.div`
   margin: 0 auto;
   width: 100vw;
   max-width: 1200px;
+
   & > button {
     flex: 1;
     margin: 0 5px;
