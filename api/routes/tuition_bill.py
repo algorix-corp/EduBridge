@@ -30,7 +30,7 @@ def make_short_url(url: str):
     }
 
     resp = requests.post(url, headers=headers, json=body)
-    return resp.json()["short_url"]
+    return str(resp.json()["short_url"])
 
 
 class TuitionBillCreate(BaseModel):
