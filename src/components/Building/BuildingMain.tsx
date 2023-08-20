@@ -174,6 +174,10 @@ const BuildingTitle = styled.p`
   font-weight: 700;
   font-size: 34px;
   color: ${colors.pblack};
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const Pin = styled(PinSVG)`
@@ -191,7 +195,9 @@ const BuildingAddress = styled.p`
 
   color: ${colors.vampgray};
 
-  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const BuildingDescription = styled.p`
@@ -204,6 +210,9 @@ const BuildingDescription = styled.p`
   font-size: 16px;
   white-space: pre-wrap;
   line-height: 140%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   color: ${colors.pblack};
 `;
