@@ -2,6 +2,7 @@ import stripe
 from fastapi.responses import RedirectResponse
 
 from api.routes._imports import *
+from api.tools.send_sms import send_sms
 
 router = APIRouter(
     prefix="/tuition_bill",
@@ -36,6 +37,12 @@ def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(ge
             session.add(tuition_bill)
             session.commit()
             session.refresh(tuition_bill)
+
+            resp = pay_tuition_bill(tuition_bill.id)
+            student = session.query(Student).filter(Student.id == tuition_bill.student_id).first()
+            phone = student.parent_phone
+            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {resp.url}")
+
             return tuition_bill
     elif current_user.role == "academy":
         with Session(engine) as session:
@@ -43,6 +50,12 @@ def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(ge
             session.add(tuition_bill)
             session.commit()
             session.refresh(tuition_bill)
+
+            resp = pay_tuition_bill(tuition_bill.id)
+            student = session.query(Student).filter(Student.id == tuition_bill.student_id).first()
+            phone = student.parent_phone
+            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {resp.url}")
+
             return tuition_bill
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
@@ -87,7 +100,7 @@ def get_tuition_bill(tuition_bill_id: int, current_user=Depends(get_current_user
 
 
 @router.get("/{tuition_bill_id}/pay")
-def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
+def pay_tuition_bill(tuition_bill_id: int):
     with Session(engine) as session:
         tuition_bill = session.query(TuitionBill).filter(TuitionBill.id == tuition_bill_id).first()
         if tuition_bill is None or tuition_bill.is_paid:
@@ -97,16 +110,18 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
             if strp_session.status is "complete":
                 tuition_bill.is_paid = True
                 session.commit()
-                return {"message": "TuitionBill paid successfully"}
-            elif strp_session.status is "complete":
-                return RedirectResponse(strp_session.url, status_code=303)
+                return {"message": "TuitionBill Already Paid"}
+            else:
+                return {
+                    "url": strp_session.url
+                }
 
     stripe_session = stripe.checkout.Session.create(
         line_items=[{
             'price_data': {
                 'currency': 'krw',
                 'product_data': {
-                    'name': f'TuitionBill/{tuition_bill_id}/{tuition_bill.yearmonth}',
+                    'name': f'Tuition Bill (BILL_ID:{tuition_bill_id};YYYYMM:{tuition_bill.yearmonth})',
                 },
                 'unit_amount': tuition_bill.amount,
             },
@@ -114,8 +129,8 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
         }],
         mode='payment',
         success_url='https://ja2023api.algorix.io/tuition_bill/' + str(
-            tuition_bill_id) + '/pay?session_code={CHECKOUT_SESSION_ID}',
-        cancel_url='https://ja2023api.algorix.io/tuition_bill/cancel',
+            tuition_bill_id) + '/payment_success?session_code={CHECKOUT_SESSION_ID}',
+        cancel_url='https://edubridge.algorix.io/cancel',
     )
 
     with Session(engine) as session:
@@ -124,12 +139,26 @@ def pay_tuition_bill(tuition_bill_id: int, session_code: Optional[str]):
         session.commit()
         session.refresh(tuition_bill)
 
-    return RedirectResponse(stripe_session.url, status_code=303)
+    return {
+        "url": stripe_session.url
+    }
 
 
-@router.get("/cancel")
-def cancel():
-    return {"message": "Payment canceled"}
+@router.get("/payment_success")
+def payment_success(session_code: str):
+    with Session(engine) as session:
+        tuition_bill = session.query(TuitionBill).filter(TuitionBill.stripe_session_id == session_code).first()
+        if tuition_bill is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TuitionBill not found")
+        tuition_bill.is_paid = True
+        session.commit()
+        session.refresh(tuition_bill)
+        return RedirectResponse("https://edubridge.algorix.io/success")
+
+
+# @router.get("/cancel")
+# def cancel():
+#     return {"message": "Payment canceled"}
 
 
 @router.put("/{tuition_bill_id}")
