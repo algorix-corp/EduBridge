@@ -25,7 +25,7 @@ origins = [
     "http://ja2023api.algorix.io",
     "https://ja2023api.algorix.io",
     "https://edubridge.algorix.io",
-    # "*"
+    "*"
 ]
 
 app.add_middleware(
