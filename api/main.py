@@ -24,6 +24,7 @@ origins = [
     "http://localhost",
     "http://ja2023api.algorix.io",
     "https://ja2023api.algorix.io",
+    "https://edubridge.algorix.io",
     # "*"
 ]
 
