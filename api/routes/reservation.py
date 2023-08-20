@@ -19,19 +19,18 @@ class ReservationCreate(BaseModel):
 def create_reservation(reservation: ReservationCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         if current_user.role == "admin":
-            # check start_date and end_date do not overlap with existing reservations
             overlapping_reservations = session.query(Reservation).filter(
                 Reservation.room_id == reservation.room_id and 
-                or_(
-                    and_(
+                and_(
+                    or_(
                         Reservation.start_date <= reservation.start_date,
                         Reservation.end_date >= reservation.start_date
                     ),
-                    and_(
+                    or_(
                         Reservation.start_date <= reservation.end_date,
                         Reservation.end_date >= reservation.end_date
                     ),
-                    and_(
+                    or_(
                         Reservation.start_date >= reservation.start_date,
                         Reservation.end_date <= reservation.end_date
                     )
