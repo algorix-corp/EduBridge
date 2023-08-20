@@ -5,7 +5,7 @@ import api from '../../api/api.ts';
 import toast from 'react-hot-toast';
 import styled from 'styled-components';
 import { Form } from '../../global/Form.tsx';
-import { colors } from '../../colors/index.ts';
+import { colors } from '../../colors';
 import { ReactComponent as OutlinedLogoSVG } from '../../assets/outlinedLogo.svg';
 import { ReactComponent as PinSVG } from '../../assets/pin.svg';
 import { Button } from '../../global/Button.tsx';
@@ -90,7 +90,7 @@ export function BuildingMain() {
       <div
         style={{
           width: '100vw',
-          height: 325,
+          height: 275,
         }}
       />
     </Container>
@@ -99,7 +99,6 @@ export function BuildingMain() {
 
 const Container = styled.div`
   position: relative;
-  top: 50px;
   width: 100vw;
   padding: 0 200px 0 200px;
 `;
