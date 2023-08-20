@@ -128,8 +128,7 @@ def pay_tuition_bill(tuition_bill_id: int):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://ja2023api.algorix.io/tuition_bill/' + str(
-            tuition_bill_id) + '/payment_success?session_code={CHECKOUT_SESSION_ID}',
+        success_url='https://ja2023api.algorix.io/tuition_bill/payment_success?session_code={CHECKOUT_SESSION_ID}',
         cancel_url='https://edubridge.algorix.io/cancel',
     )
 
