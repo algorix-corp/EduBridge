@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 
 from api.routes._imports import *
 from api.tools.send_sms import send_sms
+from BitlyAPI import shorten_urls
 
 router = APIRouter(
     prefix="/tuition_bill",
@@ -54,7 +55,7 @@ def create_tuition_bill(tuition_bill: TuitionBillCreate, current_user=Depends(ge
             resp = pay_tuition_bill(tuition_bill.id)
             student = session.query(Student).filter(Student.id == tuition_bill.student_id).first()
             phone = student.parent_phone
-            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {resp.url}")
+            send_sms(phone, f"수업료 청구서가 발행되었습니다. {tuition_bill.amount}원을 결제해주세요. {shorten_urls(resp['url'])[0].short_url}")
 
             return tuition_bill
     else:
