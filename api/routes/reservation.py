@@ -26,9 +26,12 @@ def create_reservation(reservation_create: ReservationCreate, current_user: User
                 Reservation.room_id == reservation_create.room_id,
                 and_(
                     or_(
-                        and_(Reservation.start_date <= reservation_create.start_date, Reservation.end_date >= reservation_create.start_date),
-                        and_(Reservation.start_date <= reservation_create.end_date, Reservation.end_date >= reservation_create.end_date),
-                        and_(Reservation.start_date >= reservation_create.start_date, Reservation.end_date <= reservation_create.end_date)
+                        # and_(Reservation.start_date <= reservation_create.start_date, Reservation.end_date >= reservation_create.start_date),
+                        # and_(Reservation.start_date <= reservation_create.end_date, Reservation.end_date >= reservation_create.end_date),
+                        # and_(Reservation.start_date >= reservation_create.start_date, Reservation.end_date <= reservation_create.end_date)
+                        between(Reservation.start_date, reservation_create.start_date, reservation_create.end_date),
+                        between(Reservation.end_date, reservation_create.start_date, reservation_create.end_date)
+
                     )
                 )
             ).all()
